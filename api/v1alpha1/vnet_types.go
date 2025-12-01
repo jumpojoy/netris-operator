@@ -50,6 +50,7 @@ type VNetStatus struct {
 // +kubebuilder:printcolumn:name="Modified",type=date,JSONPath=`.status.modified`,priority=1
 // +kubebuilder:printcolumn:name="Owner",type=string,JSONPath=`.spec.ownerTenant`
 // +kubebuilder:printcolumn:name="Guest Tenants",type=string,JSONPath=`.spec.guestTenants`,priority=1
+// +kubebuilder:printcolumn:name="VPC",type=string,JSONPath=`.spec.vpc`
 // +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
 // +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 
@@ -82,6 +83,7 @@ type VNetSpec struct {
 	GuestTenants []string   `json:"guestTenants"`
 	Sites        []VNetSite `json:"sites"`
 	VlanID       string     `json:"vlanId,omitempty"`
+	VPC          string     `json:"vpc"`
 }
 
 // VNetSite .

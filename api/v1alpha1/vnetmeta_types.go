@@ -42,6 +42,8 @@ type VNetMetaSpec struct {
 	VaNativeVLAN     int               `json:"vaNativeVlan"`
 	VaVLANs          string            `json:"vaVlans"`
 	VlanID           string            `json:"vlanid"`
+	VPC              string            `json:"vpc"`
+	VPCID            int               `json:"vpcId,omitempty"`
 }
 
 // VNetMetaSite .

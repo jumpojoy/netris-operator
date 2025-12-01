@@ -91,6 +91,18 @@ func (r *VNetReconciler) VnetToVnetMeta(vnet *k8sv1alpha1.VNet) (*k8sv1alpha1.VN
 		reclaim = true
 	}
 
+	// VPC is mandatory, so it must be set
+	if vnet.Spec.VPC == "" {
+		return nil, fmt.Errorf("vpc field is required but not set for vnet '%s'", vnet.Name)
+	}
+	
+	vpcID := 0
+	if vpc, ok := r.NStorage.VPCStorage.FindByName(vnet.Spec.VPC); ok {
+		vpcID = vpc.ID
+	} else {
+		return nil, fmt.Errorf("'%s' vpc not found", vnet.Spec.VPC)
+	}
+
 	vnetMeta := &k8sv1alpha1.VNetMeta{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      string(vnet.GetUID()),
@@ -113,6 +125,8 @@ func (r *VNetReconciler) VnetToVnetMeta(vnet *k8sv1alpha1.VNet) (*k8sv1alpha1.VN
 			VaNativeVLAN: 1,
 			VaVLANs:      "",
 			VlanID:       vnet.Spec.VlanID,
+			VPC:          vnet.Spec.VPC,
+			VPCID:        vpcID,
 		},
 	}
 
@@ -190,6 +204,7 @@ func (r *VNetMetaReconciler) VnetMetaToNetris(vnetMeta *k8sv1alpha1.VNetMeta) (*
 		vlanidInterface = vlanid
 	}
 
+	vpc := vnet.IDName{ID: vnetMeta.Spec.VPCID, Name: vnetMeta.Spec.VPC}
 	vnetAdd := &vnet.VNetAdd{
 		Name:         vnetMeta.Spec.VnetName,
 		Sites:        sites,
@@ -201,6 +216,7 @@ func (r *VNetMetaReconciler) VnetMetaToNetris(vnetMeta *k8sv1alpha1.VNetMeta) (*
 		NativeVlan:   1,
 		Vlan:         vlanidInterface,
 		Tags:         []string{},
+		Vpc:          &vpc,
 	}
 
 	return vnetAdd, nil

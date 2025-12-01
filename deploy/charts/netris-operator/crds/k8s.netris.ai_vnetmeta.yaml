@@ -133,6 +133,10 @@ spec:
                 type: integer
               vnetName:
                 type: string
+              vpc:
+                type: string
+              vpcId:
+                type: integer
             required:
             - gateways
             - id
@@ -151,6 +155,7 @@ spec:
             - vlanid
             - vnetGeneration
             - vnetName
+            - vpc
             type: object
           status:
             description: VNetMetaStatus defines the observed state of VNetMeta
