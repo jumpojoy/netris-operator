@@ -30,6 +30,7 @@ rules:
       - get
       - list
       - watch
+{{- if .Values.l4lb.enable }}
   - apiGroups:
       - ''
     resources:
@@ -38,6 +39,7 @@ rules:
       - get
       - list
       - watch
+{{- end }}
   - apiGroups:
       - ''
     resources:
