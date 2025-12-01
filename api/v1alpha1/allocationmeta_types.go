@@ -35,6 +35,8 @@ type AllocationMetaSpec struct {
 
 	Prefix string `json:"prefix"`
 	Tenant string `json:"tenant"`
+	VPC    string `json:"vpc"`
+	VPCID  int    `json:"vpcId,omitempty"`
 }
 
 // AllocationMetaStatus defines the observed state of AllocationMeta

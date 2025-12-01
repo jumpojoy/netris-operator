@@ -38,6 +38,7 @@ type SubnetSpec struct {
 	// +kubebuilder:validation:Pattern=`^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$`
 	DefaultGateway string   `json:"defaultGateway,omitempty"`
 	Sites          []string `json:"sites,omitempty"`
+	VPC            string   `json:"vpc"`
 }
 
 // SubnetStatus defines the observed state of Subnet
@@ -53,6 +54,7 @@ type SubnetStatus struct {
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="Prefix",type=string,JSONPath=`.spec.prefix`
 // +kubebuilder:printcolumn:name="Tenant",type=string,JSONPath=`.spec.tenant`
+// +kubebuilder:printcolumn:name="VPC",type=string,JSONPath=`.spec.vpc`
 // +kubebuilder:printcolumn:name="Purpose",type=string,JSONPath=`.spec.purpose`
 // +kubebuilder:printcolumn:name="Sites",type=string,JSONPath=`.spec.sites`
 // +kubebuilder:printcolumn:name="Default Gateway",type=string,JSONPath=`.spec.defaultGateway`

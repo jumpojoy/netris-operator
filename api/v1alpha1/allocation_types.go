@@ -32,6 +32,7 @@ type AllocationSpec struct {
 	Prefix string `json:"prefix"`
 
 	Tenant string `json:"tenant"`
+	VPC    string `json:"vpc"`
 }
 
 // AllocationStatus defines the observed state of Allocation
@@ -46,6 +47,7 @@ type AllocationStatus struct {
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="Prefix",type=string,JSONPath=`.spec.prefix`
 // +kubebuilder:printcolumn:name="Tenant",type=string,JSONPath=`.spec.tenant`
+// +kubebuilder:printcolumn:name="VPC",type=string,JSONPath=`.spec.vpc`
 // +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
 // +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 

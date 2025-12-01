@@ -55,6 +55,18 @@ func (r *SubnetReconciler) SubnetToSubnetMeta(subnet *k8sv1alpha1.Subnet) (*k8sv
 		return nil, fmt.Errorf("invalid tenant '%s'", subnet.Spec.Tenant)
 	}
 
+	// VPC is mandatory, so it must be set
+	if subnet.Spec.VPC == "" {
+		return nil, fmt.Errorf("vpc field is required but not set for subnet '%s'", subnet.Name)
+	}
+	
+	vpcID := 0
+	if vpc, ok := r.NStorage.VPCStorage.FindByName(subnet.Spec.VPC); ok {
+		vpcID = vpc.ID
+	} else {
+		return nil, fmt.Errorf("'%s' vpc not found", subnet.Spec.VPC)
+	}
+
 	subnetMeta := &k8sv1alpha1.SubnetMeta{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      string(subnet.GetUID()),
@@ -70,6 +82,8 @@ func (r *SubnetReconciler) SubnetToSubnetMeta(subnet *k8sv1alpha1.Subnet) (*k8sv
 			Purpose:        subnet.Spec.Purpose,
 			DefaultGateway: subnet.Spec.DefaultGateway,
 			Sites:          sites,
+			VPC:            subnet.Spec.VPC,
+			VPCID:          vpcID,
 		},
 	}
 
@@ -120,6 +134,7 @@ func SubnetMetaToNetris(subnetMeta *k8sv1alpha1.SubnetMeta) (*ipam.Subnet, error
 	for _, site := range subnetMeta.Spec.Sites {
 		sites = append(sites, ipam.IDName{ID: site})
 	}
+	vpc := ipam.IDName{ID: subnetMeta.Spec.VPCID, Name: subnetMeta.Spec.VPC}
 	subnetAdd := &ipam.Subnet{
 		Name:           subnetMeta.Spec.SubnetName,
 		Prefix:         subnetMeta.Spec.Prefix,
@@ -128,6 +143,7 @@ func SubnetMetaToNetris(subnetMeta *k8sv1alpha1.SubnetMeta) (*ipam.Subnet, error
 		DefaultGateway: subnetMeta.Spec.DefaultGateway,
 		Sites:          sites,
 		Tags:           []string{},
+		Vpc:            &vpc,
 	}
 
 	return subnetAdd, nil
@@ -139,6 +155,7 @@ func SubnetMetaToNetrisUpdate(subnetMeta *k8sv1alpha1.SubnetMeta) (*ipam.Subnet,
 	for _, site := range subnetMeta.Spec.Sites {
 		sites = append(sites, ipam.IDName{ID: site})
 	}
+	vpc := ipam.IDName{ID: subnetMeta.Spec.VPCID, Name: subnetMeta.Spec.VPC}
 	subnetAdd := &ipam.Subnet{
 		Name:           subnetMeta.Spec.SubnetName,
 		Prefix:         subnetMeta.Spec.Prefix,
@@ -146,6 +163,7 @@ func SubnetMetaToNetrisUpdate(subnetMeta *k8sv1alpha1.SubnetMeta) (*ipam.Subnet,
 		Purpose:        subnetMeta.Spec.Purpose,
 		DefaultGateway: subnetMeta.Spec.DefaultGateway,
 		Sites:          sites,
+		Vpc:            &vpc,
 	}
 
 	return subnetAdd, nil

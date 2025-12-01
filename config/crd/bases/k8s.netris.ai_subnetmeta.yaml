@@ -59,12 +59,17 @@ spec:
                 type: string
               tenantid:
                 type: integer
+              vpc:
+                type: string
+              vpcId:
+                type: integer
             required:
             - id
             - imported
             - reclaimPolicy
             - subnetGeneration
             - subnetName
+            - vpc
             type: object
           status:
             description: SubnetMetaStatus defines the observed state of SubnetMeta

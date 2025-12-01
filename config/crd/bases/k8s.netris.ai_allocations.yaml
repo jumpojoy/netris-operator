@@ -23,6 +23,9 @@ spec:
     - jsonPath: .spec.tenant
       name: Tenant
       type: string
+    - jsonPath: .spec.vpc
+      name: VPC
+      type: string
     - jsonPath: .status.status
       name: Status
       type: string
@@ -54,9 +57,12 @@ spec:
                 type: string
               tenant:
                 type: string
+              vpc:
+                type: string
             required:
             - prefix
             - tenant
+            - vpc
             type: object
           status:
             description: AllocationStatus defines the observed state of Allocation
