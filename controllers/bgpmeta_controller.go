@@ -97,12 +97,12 @@ func (r *BGPMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if bgpMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "BGP", "name", bgpMeta.Spec.BGPName)
 		if bgpMeta.Spec.Imported {
 			logger.Info("Importing bgp")
-			debugLogger.Info("Imported yaml mode. Finding BGP by name")
+			debugLogger.Info("Imported yaml mode. Finding BGP by name", "type", "BGP", "name", bgpMeta.Spec.BGPName)
 			if bgp, ok := r.NStorage.BGPStorage.FindByName(bgpMeta.Spec.BGPName); ok {
-				debugLogger.Info("Imported yaml mode. BGP found")
+				debugLogger.Info("Imported yaml mode. BGP found", "type", "BGP", "name", bgpMeta.Spec.BGPName)
 				bgpMeta.Spec.ID = bgp.ID
 				bgpCR.Status.ModifiedDate = metav1.NewTime(time.Unix(int64(bgp.ModifiedDate/1000), 0))
 				bgpCR.Status.BGPState = fmt.Sprintf("bgp: %s; prefix: %s; time: %s", bgp.BgpState, bgp.BgpPrefixes, bgp.BgpUptime)
@@ -128,12 +128,12 @@ func (r *BGPMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 					logger.Error(fmt.Errorf("{patch bgpmeta.Spec.ID} %s", err), "")
 					return u.patchBGPStatus(bgpCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "BGP", "name", bgpMeta.Spec.BGPName)
 				logger.Info("BGP imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("BGP not found for import")
-			debugLogger.Info("Imported yaml mode. BGP not found")
+			debugLogger.Info("Imported yaml mode. BGP not found", "type", "BGP", "name", bgpMeta.Spec.BGPName)
 		}
 
 		logger.Info("Creating BGP")
@@ -160,7 +160,7 @@ func (r *BGPMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			} else {
 				bgpCR.Status.VLANID = "untagged"
 			}
-			debugLogger.Info("Comparing BGPMeta with Netris BGP")
+			debugLogger.Info("Comparing BGPMeta with Netris BGP", "type", "BGP", "name", bgpMeta.Spec.BGPName)
 			if ok := compareBGPMetaAPIEBGP(bgpMeta, apiBGP, u); ok {
 				debugLogger.Info("Nothing Changed")
 			} else {
@@ -183,8 +183,8 @@ func (r *BGPMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 				logger.Info("BGP Updated")
 			}
 		} else {
-			debugLogger.Info("BGP not found in Netris")
-			debugLogger.Info("Going to create BGP")
+			debugLogger.Info("BGP not found in Netris", "type", "BGP", "name", bgpMeta.Spec.BGPName)
+			debugLogger.Info("Going to create BGP", "type", "BGP", "name", bgpMeta.Spec.BGPName)
 			logger.Info("Creating BGP")
 			if _, err, errMsg := r.createBGP(bgpMeta); err != nil {
 				logger.Error(fmt.Errorf("{createBGP} %s", err), "")

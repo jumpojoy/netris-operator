@@ -37,6 +37,9 @@ spec:
       name: Guest Tenants
       priority: 1
       type: string
+    - jsonPath: .spec.vpc
+      name: VPC
+      type: string
     - jsonPath: .status.status
       name: Status
       type: string
@@ -132,10 +135,26 @@ spec:
                 type: string
               vlanId:
                 type: string
+              vpc:
+                type: string
+              portTags:
+                items:
+                  description: VNetPortTag .
+                  properties:
+                    accessMode:
+                      type: boolean
+                    name:
+                      type: string
+                  required:
+                  - accessMode
+                  - name
+                  type: object
+                type: array
             required:
             - guestTenants
             - ownerTenant
             - sites
+            - vpc
             type: object
           status:
             description: VNetStatus defines the observed state of VNet

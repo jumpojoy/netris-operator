@@ -120,7 +120,7 @@ func (r *InventoryProfileReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "InventoryProfile", "name", inventoryProfile.GetName())
 		if inventoryProfileCompareFieldsForNewMeta(inventoryProfile, inventoryProfileMeta) {
 			debugLogger.Info("Generating New Meta")
 			inventoryProfileID := inventoryProfileMeta.Spec.ID
@@ -142,7 +142,7 @@ func (r *InventoryProfileReconciler) Reconcile(req ctrl.Request) (ctrl.Result, e
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "InventoryProfile", "name", inventoryProfile.GetName())
 		if inventoryProfile.GetFinalizers() == nil {
 			inventoryProfile.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 

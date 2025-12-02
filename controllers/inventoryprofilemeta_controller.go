@@ -102,12 +102,12 @@ func (r *InventoryProfileMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Resul
 	}
 
 	if inventoryProfileMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "InventoryProfile", "name", inventoryProfileMeta.Spec.InventoryProfileName)
 		if inventoryProfileMeta.Spec.Imported {
 			logger.Info("Importing inventoryProfile")
-			debugLogger.Info("Imported yaml mode. Finding InventoryProfile by name")
+			debugLogger.Info("Imported yaml mode. Finding InventoryProfile by name", "type", "InventoryProfile", "name", inventoryProfileMeta.Spec.InventoryProfileName)
 			if inventoryProfile, ok := r.NStorage.InventoryProfileStorage.FindByName(inventoryProfileMeta.Spec.InventoryProfileName); ok {
-				debugLogger.Info("Imported yaml mode. InventoryProfile found")
+				debugLogger.Info("Imported yaml mode. InventoryProfile found", "type", "InventoryProfile", "name", inventoryProfileMeta.Spec.InventoryProfileName)
 				inventoryProfileMeta.Spec.ID = inventoryProfile.ID
 
 				inventoryProfileMetaPatchCtx, inventoryProfileMetaPatchCancel := context.WithTimeout(cntxt, contextTimeout)
@@ -117,12 +117,12 @@ func (r *InventoryProfileMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Resul
 					logger.Error(fmt.Errorf("{patch inventoryProfilemeta.Spec.ID} %s", err), "")
 					return u.patchInventoryProfileStatus(inventoryProfileCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "InventoryProfile", "name", inventoryProfileMeta.Spec.InventoryProfileName)
 				logger.Info("InventoryProfile imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("InventoryProfile not found for import")
-			debugLogger.Info("Imported yaml mode. InventoryProfile not found")
+			debugLogger.Info("Imported yaml mode. InventoryProfile not found", "type", "InventoryProfile", "name", inventoryProfileMeta.Spec.InventoryProfileName)
 		}
 
 		logger.Info("Creating InventoryProfile")
@@ -134,7 +134,7 @@ func (r *InventoryProfileMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Resul
 	} else {
 		if apiInventoryProfile, ok := r.NStorage.InventoryProfileStorage.FindByID(inventoryProfileMeta.Spec.ID); ok {
 
-			debugLogger.Info("Comparing InventoryProfileMeta with Netris InventoryProfile")
+			debugLogger.Info("Comparing InventoryProfileMeta with Netris InventoryProfile", "type", "InventoryProfile", "name", inventoryProfileMeta.Spec.InventoryProfileName)
 			if ok := compareInventoryProfileMetaAPIEInventoryProfile(inventoryProfileMeta, apiInventoryProfile, u); ok {
 				debugLogger.Info("Nothing Changed")
 			} else {
@@ -157,8 +157,8 @@ func (r *InventoryProfileMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Resul
 				logger.Info("InventoryProfile Updated")
 			}
 		} else {
-			debugLogger.Info("InventoryProfile not found in Netris")
-			debugLogger.Info("Going to create InventoryProfile")
+			debugLogger.Info("InventoryProfile not found in Netris", "type", "InventoryProfile", "name", inventoryProfileMeta.Spec.InventoryProfileName)
+			debugLogger.Info("Going to create InventoryProfile", "type", "InventoryProfile", "name", inventoryProfileMeta.Spec.InventoryProfileName)
 			logger.Info("Creating InventoryProfile")
 			if _, err, errMsg := r.createInventoryProfile(inventoryProfileMeta); err != nil {
 				logger.Error(fmt.Errorf("{createInventoryProfile} %s", err), "")

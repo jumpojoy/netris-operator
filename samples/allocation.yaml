@@ -5,6 +5,7 @@ metadata:
 spec:
   prefix: 192.0.2.0/24
   tenant: Admin
+  vpc: my-vpc
 ---
 apiVersion: k8s.netris.ai/v1alpha1
 kind: Allocation
@@ -13,6 +14,7 @@ metadata:
 spec:
   prefix: 198.51.100.0/24
   tenant: Admin
+  vpc: my-vpc
 ---
 apiVersion: k8s.netris.ai/v1alpha1
 kind: Allocation
@@ -21,6 +23,7 @@ metadata:
 spec:
   prefix: 203.0.113.0/24
   tenant: Admin
+  vpc: my-vpc
 ---
 apiVersion: k8s.netris.ai/v1alpha1
 kind: Allocation
@@ -29,6 +32,7 @@ metadata:
 spec:
   prefix: 100.71.56.0/24
   tenant: Admin
+  vpc: my-vpc
 ---
 apiVersion: k8s.netris.ai/v1alpha1
 kind: Allocation
@@ -37,3 +41,4 @@ metadata:
 spec:
   prefix: 2001:db8:acad::/64
   tenant: Admin
+  vpc: my-vpc

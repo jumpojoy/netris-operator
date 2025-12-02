@@ -5,6 +5,7 @@ metadata:
 spec:
   ownerTenant: Admin
   guestTenants: []
+  vpc: my-vpc
   sites:
     - name: santa-clara
       gateways:

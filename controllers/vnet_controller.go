@@ -120,7 +120,7 @@ func (r *VNetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "VNet", "name", vnet.GetName())
 		if vnetCompareFieldsForNewMeta(vnet, vnetMeta) {
 			debugLogger.Info("Generating New Meta")
 			vnetID := vnetMeta.Spec.ID
@@ -142,7 +142,7 @@ func (r *VNetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "VNet", "name", vnet.GetName())
 		if vnet.GetFinalizers() == nil {
 			vnet.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 			vnetPatchCtx, vnetPatchCancel := context.WithTimeout(cntxt, contextTimeout)

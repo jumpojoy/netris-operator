@@ -91,6 +91,18 @@ func (r *VNetReconciler) VnetToVnetMeta(vnet *k8sv1alpha1.VNet) (*k8sv1alpha1.VN
 		reclaim = true
 	}
 
+	// VPC is mandatory, so it must be set
+	if vnet.Spec.VPC == "" {
+		return nil, fmt.Errorf("vpc field is required but not set for vnet '%s'", vnet.Name)
+	}
+	
+	vpcID := 0
+	if vpc, ok := r.NStorage.VPCStorage.FindByName(vnet.Spec.VPC); ok {
+		vpcID = vpc.ID
+	} else {
+		return nil, fmt.Errorf("'%s' vpc not found", vnet.Spec.VPC)
+	}
+
 	vnetMeta := &k8sv1alpha1.VNetMeta{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      string(vnet.GetUID()),
@@ -113,6 +125,9 @@ func (r *VNetReconciler) VnetToVnetMeta(vnet *k8sv1alpha1.VNet) (*k8sv1alpha1.VN
 			VaNativeVLAN: 1,
 			VaVLANs:      "",
 			VlanID:       vnet.Spec.VlanID,
+			VPC:          vnet.Spec.VPC,
+			VPCID:        vpcID,
+			PortTags:     vnet.Spec.PortTags,
 		},
 	}
 
@@ -190,6 +205,16 @@ func (r *VNetMetaReconciler) VnetMetaToNetris(vnetMeta *k8sv1alpha1.VNetMeta) (*
 		vlanidInterface = vlanid
 	}
 
+	vpc := vnet.IDName{ID: vnetMeta.Spec.VPCID, Name: vnetMeta.Spec.VPC}
+	portTags := []vnet.VNetPortTag{}
+	if vnetMeta.Spec.PortTags != nil {
+		for _, tag := range vnetMeta.Spec.PortTags {
+			portTags = append(portTags, vnet.VNetPortTag{
+				Name:       tag.Name,
+				AccessMode: tag.AccessMode,
+			})
+		}
+	}
 	vnetAdd := &vnet.VNetAdd{
 		Name:         vnetMeta.Spec.VnetName,
 		Sites:        sites,
@@ -201,6 +226,8 @@ func (r *VNetMetaReconciler) VnetMetaToNetris(vnetMeta *k8sv1alpha1.VNetMeta) (*
 		NativeVlan:   1,
 		Vlan:         vlanidInterface,
 		Tags:         []string{},
+		Vpc:          &vpc,
+		PortTags:     portTags,
 	}
 
 	return vnetAdd, nil
@@ -276,6 +303,15 @@ func VnetMetaToNetrisUpdate(vnetMeta *k8sv1alpha1.VNetMeta) (*vnet.VNetUpdate, e
 		vlanidInterface = vlanid
 	}
 
+	portTags := []vnet.VNetPortTag{}
+	if vnetMeta.Spec.PortTags != nil {
+		for _, tag := range vnetMeta.Spec.PortTags {
+			portTags = append(portTags, vnet.VNetPortTag{
+				Name:       tag.Name,
+				AccessMode: tag.AccessMode,
+			})
+		}
+	}
 	vnetUpdate := &vnet.VNetUpdate{
 		Name:         vnetMeta.Spec.VnetName,
 		Sites:        sites,
@@ -286,6 +322,7 @@ func VnetMetaToNetrisUpdate(vnetMeta *k8sv1alpha1.VNetMeta) (*vnet.VNetUpdate, e
 		NativeVlan:   1,
 		Vlan:         vlanidInterface,
 		Tags:         []string{},
+		PortTags:     portTags,
 	}
 
 	return vnetUpdate, nil
@@ -419,6 +456,33 @@ func compareVNetMetaAPIVnetSites(vnetMetaSites []k8sv1alpha1.VNetMetaSite, apiVn
 	return true
 }
 
+func compareVNetMetaAPIVnetPortTags(vnetMetaPortTags []k8sv1alpha1.VNetPortTag, apiVnetPortTags []vnet.VNetPortTag) bool {
+	type portTag struct {
+		Name       string `diff:"name"`
+		AccessMode bool   `diff:"accessMode"`
+	}
+
+	vnetPortTags := []portTag{}
+	apiPortTags := []portTag{}
+
+	for _, tag := range vnetMetaPortTags {
+		vnetPortTags = append(vnetPortTags, portTag{
+			Name:       tag.Name,
+			AccessMode: tag.AccessMode,
+		})
+	}
+
+	for _, tag := range apiVnetPortTags {
+		apiPortTags = append(apiPortTags, portTag{
+			Name:       tag.Name,
+			AccessMode: tag.AccessMode,
+		})
+	}
+
+	changelog, _ := diff.Diff(vnetPortTags, apiPortTags)
+	return len(changelog) <= 0
+}
+
 func compareVNetMetaAPIVnet(vnetMeta *k8sv1alpha1.VNetMeta, apiVnet *vnet.VNetDetailed) bool {
 	if ok := compareVNetMetaAPIVnetSites(vnetMeta.Spec.Sites, apiVnet.Sites); !ok {
 		return false
@@ -455,6 +519,10 @@ func compareVNetMetaAPIVnet(vnetMeta *k8sv1alpha1.VNetMeta, apiVnet *vnet.VNetDe
 	}
 
 	if vnetMeta.Spec.State != apiVnet.State {
+		return false
+	}
+
+	if ok := compareVNetMetaAPIVnetPortTags(vnetMeta.Spec.PortTags, apiVnet.PortTags); !ok {
 		return false
 	}
 

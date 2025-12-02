@@ -117,7 +117,7 @@ func (r *SubnetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "Subnet", "name", subnet.GetName())
 		if subnetCompareFieldsForNewMeta(subnet, subnetMeta) {
 			debugLogger.Info("Generating New Meta")
 			subnetID := subnetMeta.Spec.ID
@@ -139,7 +139,7 @@ func (r *SubnetReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "Subnet", "name", subnet.GetName())
 		if subnet.GetFinalizers() == nil {
 			subnet.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 

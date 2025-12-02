@@ -17,6 +17,8 @@ limitations under the License.
 package controllers
 
 import (
+	"fmt"
+
 	k8sv1alpha1 "github.com/netrisai/netris-operator/api/v1alpha1"
 	"github.com/netrisai/netriswebapi/v2/types/ipam"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -36,6 +38,18 @@ func (r *AllocationReconciler) AllocationToAllocationMeta(allocation *k8sv1alpha
 		reclaim = true
 	}
 
+	// VPC is mandatory, so it must be set
+	if allocation.Spec.VPC == "" {
+		return nil, fmt.Errorf("vpc field is required but not set for allocation '%s'", allocation.Name)
+	}
+	
+	vpcID := 0
+	if vpc, ok := r.NStorage.VPCStorage.FindByName(allocation.Spec.VPC); ok {
+		vpcID = vpc.ID
+	} else {
+		return nil, fmt.Errorf("'%s' vpc not found", allocation.Spec.VPC)
+	}
+
 	allocationMeta := &k8sv1alpha1.AllocationMeta{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      string(allocation.GetUID()),
@@ -48,6 +62,8 @@ func (r *AllocationReconciler) AllocationToAllocationMeta(allocation *k8sv1alpha
 			AllocationName: allocation.Name,
 			Prefix:         allocation.Spec.Prefix,
 			Tenant:         allocation.Spec.Tenant,
+			VPC:            allocation.Spec.VPC,
+			VPCID:          vpcID,
 		},
 	}
 
@@ -94,21 +110,26 @@ func allocationUpdateDefaultAnnotations(allocation *k8sv1alpha1.Allocation) {
 
 // AllocationMetaToNetris converts the k8s Allocation resource to Netris type and used for add the Allocation for Netris API.
 func AllocationMetaToNetris(allocationMeta *k8sv1alpha1.AllocationMeta) (*ipam.Allocation, error) {
+	vpc := ipam.IDName{ID: allocationMeta.Spec.VPCID, Name: allocationMeta.Spec.VPC}
 	allocationAdd := &ipam.Allocation{
 		Name:   allocationMeta.Spec.AllocationName,
 		Prefix: allocationMeta.Spec.Prefix,
 		Tenant: ipam.IDName{Name: allocationMeta.Spec.Tenant},
+		Vpc:    &vpc,
 	}
+	
 
 	return allocationAdd, nil
 }
 
 // AllocationMetaToNetrisUpdate converts the k8s Allocation resource to Netris type and used for update the Allocation for Netris API.
 func AllocationMetaToNetrisUpdate(allocationMeta *k8sv1alpha1.AllocationMeta) (*ipam.Allocation, error) {
+	vpc := ipam.IDName{ID: allocationMeta.Spec.VPCID, Name: allocationMeta.Spec.VPC}
 	allocationAdd := &ipam.Allocation{
 		Name:   allocationMeta.Spec.AllocationName,
 		Prefix: allocationMeta.Spec.Prefix,
 		Tenant: ipam.IDName{Name: allocationMeta.Spec.Tenant},
+		Vpc:    &vpc,
 	}
 
 	return allocationAdd, nil

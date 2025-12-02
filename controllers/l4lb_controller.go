@@ -119,7 +119,7 @@ func (r *L4LBReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "L4LB", "name", l4lb.GetName())
 		if l4lbCompareFieldsForNewMeta(l4lb, l4lbMeta) {
 			debugLogger.Info("Generating New Meta")
 			l4lbID := l4lbMeta.Spec.ID
@@ -141,7 +141,7 @@ func (r *L4LBReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "L4LB", "name", l4lb.GetName())
 		if l4lb.GetFinalizers() == nil {
 			l4lb.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 			l4lbCtx, l4lbCancel := context.WithTimeout(cntxt, contextTimeout)

@@ -39,6 +39,8 @@ type SubnetMetaSpec struct {
 	Purpose        string `json:"purpose,omitempty"`
 	DefaultGateway string `json:"defaultGateway,omitempty"`
 	Sites          []int  `json:"sites,omitempty"`
+	VPC            string `json:"vpc"`
+	VPCID          int    `json:"vpcId,omitempty"`
 }
 
 // SubnetMetaStatus defines the observed state of SubnetMeta

@@ -5,6 +5,7 @@ metadata:
 spec:
   prefix: 192.0.2.0/24
   tenant: Admin
+  vpc: my-vpc
   purpose: management
   defaultGateway: 192.0.2.254
   sites:
@@ -17,6 +18,7 @@ metadata:
 spec:
   prefix: 198.51.100.0/24
   tenant: Admin
+  vpc: my-vpc
   purpose: loopback
   sites:
   - santa-clara
@@ -28,6 +30,7 @@ metadata:
 spec:
   prefix: 203.0.113.0/25
   tenant: Admin
+  vpc: my-vpc
   purpose: common
   sites:
   - santa-clara
@@ -39,6 +42,7 @@ metadata:
 spec:
   prefix: 203.0.113.128/26
   tenant: Admin
+  vpc: my-vpc
   purpose: load-balancer
   sites:
   - santa-clara
@@ -50,6 +54,7 @@ metadata:
 spec:
   prefix: 203.0.113.192/26
   tenant: Admin
+  vpc: my-vpc
   purpose: nat
   sites:
   - santa-clara
@@ -61,6 +66,7 @@ metadata:
 spec:
   prefix: 100.71.56.0/24
   tenant: Admin
+  vpc: my-vpc
   purpose: common
   sites:
   - santa-clara
@@ -72,6 +78,7 @@ metadata:
 spec:
   prefix: 2001:db8:acad::/64
   tenant: Admin
+  vpc: my-vpc
   purpose: common
   sites:
   - santa-clara

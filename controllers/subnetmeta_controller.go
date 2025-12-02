@@ -102,12 +102,12 @@ func (r *SubnetMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 	}
 
 	if subnetMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "Subnet", "name", subnetMeta.Spec.SubnetName)
 		if subnetMeta.Spec.Imported {
 			logger.Info("Importing subnet")
-			debugLogger.Info("Imported yaml mode. Finding Subnet by name")
+			debugLogger.Info("Imported yaml mode. Finding Subnet by name", "type", "Subnet", "name", subnetMeta.Spec.SubnetName)
 			if subnet, ok := r.NStorage.SubnetsStorage.FindByName(subnetMeta.Spec.SubnetName); ok {
-				debugLogger.Info("Imported yaml mode. Subnet found")
+				debugLogger.Info("Imported yaml mode. Subnet found", "type", "Subnet", "name", subnetMeta.Spec.SubnetName)
 				subnetMeta.Spec.ID = subnet.ID
 
 				subnetMetaPatchCtx, subnetMetaPatchCancel := context.WithTimeout(cntxt, contextTimeout)
@@ -117,12 +117,12 @@ func (r *SubnetMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 					logger.Error(fmt.Errorf("{patch subnetmeta.Spec.ID} %s", err), "")
 					return u.patchSubnetStatus(subnetCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "Subnet", "name", subnetMeta.Spec.SubnetName)
 				logger.Info("Subnet imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("Subnet not found for import")
-			debugLogger.Info("Imported yaml mode. Subnet not found")
+			debugLogger.Info("Imported yaml mode. Subnet not found", "type", "Subnet", "name", subnetMeta.Spec.SubnetName)
 		}
 
 		logger.Info("Creating Subnet")
@@ -133,7 +133,7 @@ func (r *SubnetMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 		logger.Info("Subnet Created")
 	} else {
 		if apiSubnet, ok := r.NStorage.SubnetsStorage.FindByID(subnetMeta.Spec.ID, "subnet"); ok {
-			debugLogger.Info("Comparing SubnetMeta with Netris Subnet")
+			debugLogger.Info("Comparing SubnetMeta with Netris Subnet", "type", "Subnet", "name", subnetMeta.Spec.SubnetName)
 			if ok := compareSubnetMetaAPIESubnet(subnetMeta, apiSubnet, u); ok {
 				debugLogger.Info("Nothing Changed")
 			} else {
@@ -156,8 +156,8 @@ func (r *SubnetMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 				logger.Info("Subnet Updated")
 			}
 		} else {
-			debugLogger.Info("Subnet not found in Netris")
-			debugLogger.Info("Going to create Subnet")
+			debugLogger.Info("Subnet not found in Netris", "type", "Subnet", "name", subnetMeta.Spec.SubnetName)
+			debugLogger.Info("Going to create Subnet", "type", "Subnet", "name", subnetMeta.Spec.SubnetName)
 			logger.Info("Creating Subnet")
 			if _, err, errMsg := r.createSubnet(subnetMeta); err != nil {
 				logger.Error(fmt.Errorf("{createSubnet} %s", err), "")

@@ -117,7 +117,7 @@ func (r *AllocationReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "Allocation", "name", allocation.GetName())
 		if allocationCompareFieldsForNewMeta(allocation, allocationMeta) {
 			debugLogger.Info("Generating New Meta")
 			allocationID := allocationMeta.Spec.ID
@@ -139,7 +139,7 @@ func (r *AllocationReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "Allocation", "name", allocation.GetName())
 		if allocation.GetFinalizers() == nil {
 			allocation.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 

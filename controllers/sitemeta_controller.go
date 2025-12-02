@@ -131,12 +131,12 @@ func (r *SiteMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if siteMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "Site", "name", siteMeta.Spec.SiteName)
 		if siteMeta.Spec.Imported {
 			logger.Info("Importing site")
-			debugLogger.Info("Imported yaml mode. Finding Site by name")
+			debugLogger.Info("Imported yaml mode. Finding Site by name", "type", "Site", "name", siteMeta.Spec.SiteName)
 			if site, ok := r.NStorage.SitesStorage.FindByName(siteMeta.Spec.SiteName); ok {
-				debugLogger.Info("Imported yaml mode. Site found")
+				debugLogger.Info("Imported yaml mode. Site found", "type", "Site", "name", siteMeta.Spec.SiteName)
 				siteMeta.Spec.ID = site.ID
 
 				siteMetaPatchCtx, siteMetaPatchCancel := context.WithTimeout(cntxt, contextTimeout)
@@ -146,12 +146,12 @@ func (r *SiteMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 					logger.Error(fmt.Errorf("{patch sitemeta.Spec.ID} %s", err), "")
 					return u.patchSiteStatus(siteCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "Site", "name", siteMeta.Spec.SiteName)
 				logger.Info("Site imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("Site not found for import")
-			debugLogger.Info("Imported yaml mode. Site not found")
+			debugLogger.Info("Imported yaml mode. Site not found", "type", "Site", "name", siteMeta.Spec.SiteName)
 		}
 
 		logger.Info("Creating Site")
@@ -163,7 +163,7 @@ func (r *SiteMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	} else {
 		if apiSite, ok := r.NStorage.SitesStorage.FindByID(siteMeta.Spec.ID); ok {
 
-			debugLogger.Info("Comparing SiteMeta with Netris Site")
+			debugLogger.Info("Comparing SiteMeta with Netris Site", "type", "Site", "name", siteMeta.Spec.SiteName)
 			if ok := compareSiteMetaAPIESite(siteMeta, apiSite, u); ok {
 				debugLogger.Info("Nothing Changed")
 			} else {
@@ -186,8 +186,8 @@ func (r *SiteMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 				logger.Info("Site Updated")
 			}
 		} else {
-			debugLogger.Info("Site not found in Netris")
-			debugLogger.Info("Going to create Site")
+			debugLogger.Info("Site not found in Netris", "type", "Site", "name", siteMeta.Spec.SiteName)
+			debugLogger.Info("Going to create Site", "type", "Site", "name", siteMeta.Spec.SiteName)
 			logger.Info("Creating Site")
 			if _, err, errMsg := r.createSite(siteMeta); err != nil {
 				logger.Error(fmt.Errorf("{createSite} %s", err), "")

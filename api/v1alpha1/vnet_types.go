@@ -50,6 +50,7 @@ type VNetStatus struct {
 // +kubebuilder:printcolumn:name="Modified",type=date,JSONPath=`.status.modified`,priority=1
 // +kubebuilder:printcolumn:name="Owner",type=string,JSONPath=`.spec.ownerTenant`
 // +kubebuilder:printcolumn:name="Guest Tenants",type=string,JSONPath=`.spec.guestTenants`,priority=1
+// +kubebuilder:printcolumn:name="VPC",type=string,JSONPath=`.spec.vpc`
 // +kubebuilder:printcolumn:name="Status",type=string,JSONPath=`.status.status`
 // +kubebuilder:printcolumn:name="Age",type=date,JSONPath=`.metadata.creationTimestamp`
 
@@ -72,6 +73,12 @@ type VNetList struct {
 	Items           []VNet `json:"items"`
 }
 
+// VNetPortTag .
+type VNetPortTag struct {
+	Name       string `json:"name"`
+	AccessMode bool   `json:"accessMode"`
+}
+
 // VNetSpec .
 type VNetSpec struct {
 	Owner string `json:"ownerTenant"`
@@ -79,9 +86,11 @@ type VNetSpec struct {
 	// +kubebuilder:validation:Enum=active;disabled
 	State string `json:"state,omitempty"`
 
-	GuestTenants []string   `json:"guestTenants"`
-	Sites        []VNetSite `json:"sites"`
-	VlanID       string     `json:"vlanId,omitempty"`
+	GuestTenants []string      `json:"guestTenants"`
+	Sites        []VNetSite    `json:"sites"`
+	VlanID       string        `json:"vlanId,omitempty"`
+	VPC          string        `json:"vpc"`
+	PortTags     []VNetPortTag `json:"portTags,omitempty"`
 }
 
 // VNetSite .

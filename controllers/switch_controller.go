@@ -120,7 +120,7 @@ func (r *SwitchReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "Switch", "name", switchH.GetName())
 		if switchCompareFieldsForNewMeta(switchH, switchMeta) {
 			debugLogger.Info("Generating New Meta")
 			switchID := switchMeta.Spec.ID
@@ -142,7 +142,7 @@ func (r *SwitchReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "Switch", "name", switchH.GetName())
 		if switchH.GetFinalizers() == nil {
 			switchH.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 

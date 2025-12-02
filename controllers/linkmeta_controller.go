@@ -104,12 +104,12 @@ func (r *LinkMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if linkMeta.Spec.ID == "" {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "Link", "name", linkMeta.Spec.LinkName)
 		if linkMeta.Spec.Imported {
 			logger.Info("Importing link")
-			debugLogger.Info("Imported yaml mode. Finding Link by name")
+			debugLogger.Info("Imported yaml mode. Finding Link by name", "type", "Link", "name", linkMeta.Spec.LinkName)
 			if link, ok := r.NStorage.LinksStorage.Find(linkMeta.Spec.Local, linkMeta.Spec.Remote); ok {
-				debugLogger.Info("Imported yaml mode. Link found")
+				debugLogger.Info("Imported yaml mode. Link found", "type", "Link", "name", linkMeta.Spec.LinkName)
 				linkMeta.Spec.ID = fmt.Sprintf("%d-%d", link.Local.ID, link.Remote.ID)
 				linkMetaPatchCtx, linkMetaPatchCancel := context.WithTimeout(cntxt, contextTimeout)
 				defer linkMetaPatchCancel()
@@ -118,12 +118,12 @@ func (r *LinkMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 					logger.Error(fmt.Errorf("{patch linkmeta.Spec.ID} %s", err), "")
 					return u.patchLinkStatus(linkCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "Link", "name", linkMeta.Spec.LinkName)
 				logger.Info("Link imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("Link not found for import")
-			debugLogger.Info("Imported yaml mode. Link not found")
+			debugLogger.Info("Imported yaml mode. Link not found", "type", "Link", "name", linkMeta.Spec.LinkName)
 		}
 
 		logger.Info("Creating Link")
@@ -182,8 +182,8 @@ func (r *LinkMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 				}
 			}
 		} else {
-			debugLogger.Info("Link not found in Netris")
-			debugLogger.Info("Going to create Link")
+			debugLogger.Info("Link not found in Netris", "type", "Link", "name", linkMeta.Spec.LinkName)
+			debugLogger.Info("Going to create Link", "type", "Link", "name", linkMeta.Spec.LinkName)
 			logger.Info("Creating Link")
 			if _, err, errMsg := r.createLink(linkMeta); err != nil {
 				logger.Error(fmt.Errorf("{createLink} %s", err), "")

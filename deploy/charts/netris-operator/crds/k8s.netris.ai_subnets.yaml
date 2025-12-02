@@ -23,6 +23,9 @@ spec:
     - jsonPath: .spec.tenant
       name: Tenant
       type: string
+    - jsonPath: .spec.vpc
+      name: VPC
+      type: string
     - jsonPath: .spec.purpose
       name: Purpose
       type: string
@@ -79,6 +82,10 @@ spec:
                 type: array
               tenant:
                 type: string
+              vpc:
+                type: string
+            required:
+            - vpc
             type: object
           status:
             description: SubnetStatus defines the observed state of Subnet

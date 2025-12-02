@@ -13,9 +13,8 @@ ARG TARGETPLATFORM
 
 WORKDIR /workspace
 
-# Config ssh private key
-RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN git config --global --add url."git@github.com:".insteadOf "https://github.com/"
+# Clone netriswebapi extensions branch for replace directive (public repo, no SSH needed)
+RUN git clone -b extensions https://github.com/jumpojoy/netriswebapi.git /tmp/netriswebapi
 
 # Copy the Go Modules manifests
 COPY go.mod go.mod

@@ -129,12 +129,12 @@ func (r *L4LBMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if l4lbMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "L4LB", "name", l4lbMeta.Spec.L4LBName)
 		if l4lbMeta.Spec.Imported {
 			logger.Info("Importing l4lb")
-			debugLogger.Info("Imported yaml mode. Finding L4LB by name")
+			debugLogger.Info("Imported yaml mode. Finding L4LB by name", "type", "L4LB", "name", l4lbMeta.Spec.L4LBName)
 			if l4lb, ok := r.NStorage.L4LBStorage.FindByName(l4lbMeta.Spec.L4LBName); ok {
-				debugLogger.Info("Imported yaml mode. L4LB found")
+				debugLogger.Info("Imported yaml mode. L4LB found", "type", "L4LB", "name", l4lbMeta.Spec.L4LBName)
 				l4lbMeta.Spec.ID = l4lb.ID
 				l4lbMeta.Spec.VPCID = l4lb.Vpc.ID
 				l4lbMeta.Spec.IP = l4lb.IP
@@ -146,12 +146,12 @@ func (r *L4LBMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 					logger.Error(fmt.Errorf("{patch l4lbMeta.Spec.ID} %s", err), "")
 					return u.patchL4LBStatus(l4lbCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "L4LB", "name", l4lbMeta.Spec.L4LBName)
 				logger.Info("L4LB imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("L4LB not found for import")
-			debugLogger.Info("Imported yaml mode. L4LB not found")
+			debugLogger.Info("Imported yaml mode. L4LB not found", "type", "L4LB", "name", l4lbMeta.Spec.L4LBName)
 		}
 
 		if err := r.populateMetaVPC(l4lbMeta, l4lbCR); err != nil {
@@ -167,8 +167,8 @@ func (r *L4LBMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	} else {
 		apiL4LB, ok := r.NStorage.L4LBStorage.FindByID(l4lbMeta.Spec.ID)
 		if !ok {
-			debugLogger.Info("L4LB not found in Netris")
-			debugLogger.Info("Going to create L4LB")
+			debugLogger.Info("L4LB not found in Netris", "type", "L4LB", "name", l4lbMeta.Spec.L4LBName)
+			debugLogger.Info("Going to create L4LB", "type", "L4LB", "name", l4lbMeta.Spec.L4LBName)
 			if err := r.populateMetaVPC(l4lbMeta, l4lbCR); err != nil {
 				logger.Error(fmt.Errorf("{populateMetaVPC} %s", err), "")
 				return u.patchL4LBStatus(l4lbCR, "Failure", err.Error())
@@ -186,7 +186,7 @@ func (r *L4LBMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 				logger.Error(fmt.Errorf("{populateMetaVPC} %s", err), "")
 				return u.patchL4LBStatus(l4lbCR, "Failure", err.Error())
 			}
-			debugLogger.Info("Comparing L4LBMeta with Netris L4LB")
+			debugLogger.Info("Comparing L4LBMeta with Netris L4LB", "type", "L4LB", "name", l4lbMeta.Spec.L4LBName)
 			if ok := compareL4LBMetaAPIL4LB(l4lbMeta, apiL4LB); ok {
 				debugLogger.Info("Nothing Changed")
 			} else {

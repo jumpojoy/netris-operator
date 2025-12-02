@@ -133,6 +133,23 @@ spec:
                 type: integer
               vnetName:
                 type: string
+              vpc:
+                type: string
+              vpcId:
+                type: integer
+              portTags:
+                items:
+                  description: VNetPortTag .
+                  properties:
+                    accessMode:
+                      type: boolean
+                    name:
+                      type: string
+                  required:
+                  - accessMode
+                  - name
+                  type: object
+                type: array
             required:
             - gateways
             - id
@@ -151,6 +168,7 @@ spec:
             - vlanid
             - vnetGeneration
             - vnetName
+            - vpc
             type: object
           status:
             description: VNetMetaStatus defines the observed state of VNetMeta

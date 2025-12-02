@@ -103,12 +103,12 @@ func (r *SwitchMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 	}
 
 	if switchMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "Switch", "name", switchMeta.Spec.SwitchName)
 		if switchMeta.Spec.Imported {
 			logger.Info("Importing switch")
-			debugLogger.Info("Imported yaml mode. Finding Switch by name")
+			debugLogger.Info("Imported yaml mode. Finding Switch by name", "type", "Switch", "name", switchMeta.Spec.SwitchName)
 			if switchH, ok := r.NStorage.HWsStorage.FindSwitchByName(switchMeta.Spec.SwitchName); ok {
-				debugLogger.Info("Imported yaml mode. Switch found")
+				debugLogger.Info("Imported yaml mode. Switch found", "type", "Switch", "name", switchMeta.Spec.SwitchName)
 				switchMeta.Spec.ID = switchH.ID
 				switchMeta.Spec.MainIP = switchH.MainIP.Address
 				switchMeta.Spec.MgmtIP = switchH.MgmtIP.Address
@@ -121,12 +121,12 @@ func (r *SwitchMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 					logger.Error(fmt.Errorf("{patch switchmeta.Spec.ID} %s", err), "")
 					return u.patchSwitchStatus(switchCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "Switch", "name", switchMeta.Spec.SwitchName)
 				logger.Info("Switch imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("Switch not found for import")
-			debugLogger.Info("Imported yaml mode. Switch not found")
+			debugLogger.Info("Imported yaml mode. Switch not found", "type", "Switch", "name", switchMeta.Spec.SwitchName)
 		}
 
 		logger.Info("Creating Switch")
@@ -137,7 +137,7 @@ func (r *SwitchMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 		logger.Info("Switch Created")
 	} else {
 		if apiSwitch, ok := r.NStorage.HWsStorage.FindSwitchByID(switchMeta.Spec.ID); ok {
-			debugLogger.Info("Comparing SwitchMeta with Netris Switch")
+			debugLogger.Info("Comparing SwitchMeta with Netris Switch", "type", "Switch", "name", switchMeta.Spec.SwitchName)
 
 			if switchMeta.Spec.MainIP == "" {
 				switchMeta.Spec.MainIP = apiSwitch.MainIP.Address
@@ -171,8 +171,8 @@ func (r *SwitchMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 				logger.Info("Switch Updated")
 			}
 		} else {
-			debugLogger.Info("Switch not found in Netris")
-			debugLogger.Info("Going to create Switch")
+			debugLogger.Info("Switch not found in Netris", "type", "Switch", "name", switchMeta.Spec.SwitchName)
+			debugLogger.Info("Going to create Switch", "type", "Switch", "name", switchMeta.Spec.SwitchName)
 			logger.Info("Creating Switch")
 			if _, err, errMsg := r.createSwitch(switchMeta); err != nil {
 				logger.Error(fmt.Errorf("{createSwitch} %s", err), "")

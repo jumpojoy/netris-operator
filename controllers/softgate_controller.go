@@ -120,7 +120,7 @@ func (r *SoftgateReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "Softgate", "name", softgate.GetName())
 		if softgateCompareFieldsForNewMeta(softgate, softgateMeta) {
 			debugLogger.Info("Generating New Meta")
 			softgateID := softgateMeta.Spec.ID
@@ -142,7 +142,7 @@ func (r *SoftgateReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "Softgate", "name", softgate.GetName())
 		if softgate.GetFinalizers() == nil {
 			softgate.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 
