@@ -95,12 +95,12 @@ func (r *VNetMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if vnetMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "VNet", "name", vnetMeta.Spec.VnetName)
 		if vnetMeta.Spec.Imported {
 			logger.Info("Importing vnet")
-			debugLogger.Info("Imported yaml mode. Finding VNet by name")
+			debugLogger.Info("Imported yaml mode. Finding VNet by name", "type", "VNet", "name", vnetMeta.Spec.VnetName)
 			if vnet, ok := r.NStorage.VNetStorage.FindByName(vnetMeta.Spec.VnetName); ok {
-				debugLogger.Info("Imported yaml mode. Vnet found")
+				debugLogger.Info("Imported yaml mode. Vnet found", "type", "VNet", "name", vnetMeta.Spec.VnetName)
 				vnetMeta.Spec.ID = vnet.ID
 				vnetCR.Status.ModifiedDate = metav1.NewTime(time.Unix(int64(vnet.ModifiedDate/1000), 0))
 				vnetMetaPatchCtx, vnetMetaPatchCancel := context.WithTimeout(cntxt, contextTimeout)
@@ -110,12 +110,12 @@ func (r *VNetMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 					logger.Error(fmt.Errorf("{patch vnetmeta.Spec.ID} %s", err), "")
 					return u.patchVNetStatus(vnetCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "VNet", "name", vnetMeta.Spec.VnetName)
 				logger.Info("VNet imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("VNet not found for import")
-			debugLogger.Info("Imported yaml mode. VNet not found")
+			debugLogger.Info("Imported yaml mode. VNet not found", "type", "VNet", "name", vnetMeta.Spec.VnetName)
 		}
 
 		logger.Info("Creating VNet")
@@ -127,8 +127,8 @@ func (r *VNetMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	} else {
 		vnet, _ := r.Cred.VNet().GetByID(vnetMeta.Spec.ID)
 		if vnet == nil {
-			debugLogger.Info("VNet not found in Netris")
-			debugLogger.Info("Going to create VNet")
+			debugLogger.Info("VNet not found in Netris", "type", "VNet", "name", vnetMeta.Spec.VnetName)
+			debugLogger.Info("Going to create VNet", "type", "VNet", "name", vnetMeta.Spec.VnetName)
 			logger.Info("Creating VNet")
 			if _, err, errMsg := r.createVNet(vnetMeta); err != nil {
 				logger.Error(fmt.Errorf("{createVNet} %s", err), "")
@@ -143,7 +143,7 @@ func (r *VNetMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 				provisionState = "Disabled"
 			}
 			vnetCR.Status.ModifiedDate = metav1.NewTime(time.Unix(int64(vnet.ModifiedDate/1000), 0))
-			debugLogger.Info("Comparing VnetMeta with Netris Vnet")
+			debugLogger.Info("Comparing VnetMeta with Netris Vnet", "type", "VNet", "name", vnetMeta.Spec.VnetName)
 			if ok := compareVNetMetaAPIVnet(vnetMeta, vnet); ok {
 				debugLogger.Info("Nothing Changed")
 			} else {

@@ -103,12 +103,12 @@ func (r *SoftgateMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error
 	}
 
 	if softgateMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "Softgate", "name", softgateMeta.Spec.SoftgateName)
 		if softgateMeta.Spec.Imported {
 			logger.Info("Importing softgate")
-			debugLogger.Info("Imported yaml mode. Finding Softgate by name")
+			debugLogger.Info("Imported yaml mode. Finding Softgate by name", "type", "Softgate", "name", softgateMeta.Spec.SoftgateName)
 			if softgate, ok := r.NStorage.HWsStorage.FindSoftgateByName(softgateMeta.Spec.SoftgateName); ok {
-				debugLogger.Info("Imported yaml mode. Softgate found")
+				debugLogger.Info("Imported yaml mode. Softgate found", "type", "Softgate", "name", softgateMeta.Spec.SoftgateName)
 				softgateMeta.Spec.ID = softgate.ID
 				softgateMeta.Spec.MainIP = softgate.MainIP.Address
 				softgateMeta.Spec.MgmtIP = softgate.MgmtIP.Address
@@ -120,12 +120,12 @@ func (r *SoftgateMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error
 					logger.Error(fmt.Errorf("{patch softgatemeta.Spec.ID} %s", err), "")
 					return u.patchSoftgateStatus(softgateCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "Softgate", "name", softgateMeta.Spec.SoftgateName)
 				logger.Info("Softgate imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("Softgate not found for import")
-			debugLogger.Info("Imported yaml mode. Softgate not found")
+			debugLogger.Info("Imported yaml mode. Softgate not found", "type", "Softgate", "name", softgateMeta.Spec.SoftgateName)
 		}
 
 		logger.Info("Creating Softgate")
@@ -136,7 +136,7 @@ func (r *SoftgateMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error
 		logger.Info("Softgate Created")
 	} else {
 		if apiSoftgate, ok := r.NStorage.HWsStorage.FindSoftgateByID(softgateMeta.Spec.ID); ok {
-			debugLogger.Info("Comparing SoftgateMeta with Netris Softgate")
+			debugLogger.Info("Comparing SoftgateMeta with Netris Softgate", "type", "Softgate", "name", softgateMeta.Spec.SoftgateName)
 
 			if softgateMeta.Spec.MainIP == "" {
 				softgateMeta.Spec.MainIP = apiSoftgate.MainIP.Address
@@ -167,8 +167,8 @@ func (r *SoftgateMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error
 				logger.Info("Softgate Updated")
 			}
 		} else {
-			debugLogger.Info("Softgate not found in Netris")
-			debugLogger.Info("Going to create Softgate")
+			debugLogger.Info("Softgate not found in Netris", "type", "Softgate", "name", softgateMeta.Spec.SoftgateName)
+			debugLogger.Info("Going to create Softgate", "type", "Softgate", "name", softgateMeta.Spec.SoftgateName)
 			logger.Info("Creating Softgate")
 			if _, err, errMsg := r.createSoftgate(softgateMeta); err != nil {
 				logger.Error(fmt.Errorf("{createSoftgate} %s", err), "")

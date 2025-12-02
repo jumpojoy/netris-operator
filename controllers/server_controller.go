@@ -120,7 +120,7 @@ func (r *ServerReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "Server", "name", server.GetName())
 		if serverCompareFieldsForNewMeta(server, serverMeta) {
 			debugLogger.Info("Generating New Meta")
 			serverID := serverMeta.Spec.ID
@@ -142,7 +142,7 @@ func (r *ServerReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "Server", "name", server.GetName())
 		if server.GetFinalizers() == nil {
 			server.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 

@@ -112,7 +112,7 @@ func (r *VPCReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "VPC", "name", vpcCR.GetName())
 		if vpcCompareFieldsForNewMeta(vpcCR, vpcMeta) {
 			debugLogger.Info("Generating New Meta")
 			vpcID := vpcMeta.Spec.ID
@@ -134,7 +134,7 @@ func (r *VPCReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "VPC", "name", vpcCR.GetName())
 		if vpcCR.GetFinalizers() == nil {
 			vpcCR.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 			vpcPatchCtx, vpcPatchCancel := context.WithTimeout(cntxt, contextTimeout)

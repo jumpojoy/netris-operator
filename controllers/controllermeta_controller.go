@@ -102,12 +102,12 @@ func (r *ControllerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 	}
 
 	if controllerMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "Controller", "name", controllerMeta.Spec.ControllerName)
 		if controllerMeta.Spec.Imported {
 			logger.Info("Importing controller")
-			debugLogger.Info("Imported yaml mode. Finding Controller by name")
+			debugLogger.Info("Imported yaml mode. Finding Controller by name", "type", "Controller", "name", controllerMeta.Spec.ControllerName)
 			if controller, ok := r.NStorage.HWsStorage.FindControllerByName(controllerMeta.Spec.ControllerName); ok {
-				debugLogger.Info("Imported yaml mode. Controller found")
+				debugLogger.Info("Imported yaml mode. Controller found", "type", "Controller", "name", controllerMeta.Spec.ControllerName)
 				controllerMeta.Spec.ID = controller.ID
 				controllerMeta.Spec.MainIP = controller.MainIP.Address
 
@@ -118,12 +118,12 @@ func (r *ControllerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 					logger.Error(fmt.Errorf("{patch controllermeta.Spec.ID} %s", err), "")
 					return u.patchControllerStatus(controllerCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "Controller", "name", controllerMeta.Spec.ControllerName)
 				logger.Info("Controller imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("Controller not found for import")
-			debugLogger.Info("Imported yaml mode. Controller not found")
+			debugLogger.Info("Imported yaml mode. Controller not found", "type", "Controller", "name", controllerMeta.Spec.ControllerName)
 		}
 
 		logger.Info("Creating Controller")
@@ -134,7 +134,7 @@ func (r *ControllerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 		logger.Info("Controller Created")
 	} else {
 		if apiController, ok := r.NStorage.HWsStorage.FindControllerByID(controllerMeta.Spec.ID); ok {
-			debugLogger.Info("Comparing ControllerMeta with Netris Controller")
+			debugLogger.Info("Comparing ControllerMeta with Netris Controller", "type", "Controller", "name", controllerMeta.Spec.ControllerName)
 
 			if ok := compareControllerMetaAPIEController(controllerMeta, apiController, u); ok {
 				debugLogger.Info("Nothing Changed")
@@ -159,8 +159,8 @@ func (r *ControllerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 			}
 			controllerMeta.Spec.MainIP = apiController.MainIP.Address
 		} else {
-			debugLogger.Info("Controller not found in Netris")
-			debugLogger.Info("Going to create Controller")
+			debugLogger.Info("Controller not found in Netris", "type", "Controller", "name", controllerMeta.Spec.ControllerName)
+			debugLogger.Info("Going to create Controller", "type", "Controller", "name", controllerMeta.Spec.ControllerName)
 			logger.Info("Creating Controller")
 			if _, err, errMsg := r.createController(controllerMeta); err != nil {
 				logger.Error(fmt.Errorf("{createController} %s", err), "")

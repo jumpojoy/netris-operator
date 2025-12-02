@@ -102,12 +102,12 @@ func (r *NatMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if natMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "Nat", "name", natMeta.Spec.NatName)
 		if natMeta.Spec.Imported {
 			logger.Info("Importing nat")
-			debugLogger.Info("Imported yaml mode. Finding Nat by name")
+			debugLogger.Info("Imported yaml mode. Finding Nat by name", "type", "Nat", "name", natMeta.Spec.NatName)
 			if nat, ok := r.NStorage.NATStorage.FindByName(natMeta.Spec.NatName); ok {
-				debugLogger.Info("Imported yaml mode. Nat found")
+				debugLogger.Info("Imported yaml mode. Nat found", "type", "Nat", "name", natMeta.Spec.NatName)
 				natMeta.Spec.ID = nat.ID
 
 				natMetaPatchCtx, natMetaPatchCancel := context.WithTimeout(cntxt, contextTimeout)
@@ -134,7 +134,7 @@ func (r *NatMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	} else {
 		if apiNat, ok := r.NStorage.NATStorage.FindByID(natMeta.Spec.ID); ok {
 
-			debugLogger.Info("Comparing NatMeta with Netris Nat")
+			debugLogger.Info("Comparing NatMeta with Netris Nat", "type", "Nat", "name", natMeta.Spec.NatName)
 			if ok := compareNatMetaAPIENat(natMeta, apiNat, u); ok {
 				debugLogger.Info("Nothing Changed")
 			} else {
@@ -157,8 +157,8 @@ func (r *NatMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 				logger.Info("Nat Updated")
 			}
 		} else {
-			debugLogger.Info("Nat not found in Netris")
-			debugLogger.Info("Going to create Nat")
+			debugLogger.Info("Nat not found in Netris", "type", "Nat", "name", natMeta.Spec.NatName)
+			debugLogger.Info("Going to create Nat", "type", "Nat", "name", natMeta.Spec.NatName)
 			logger.Info("Creating Nat")
 			if _, err, errMsg := r.createNat(natMeta); err != nil {
 				logger.Error(fmt.Errorf("{createNat} %s", err), "")

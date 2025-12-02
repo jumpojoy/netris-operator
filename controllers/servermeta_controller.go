@@ -103,12 +103,12 @@ func (r *ServerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 	}
 
 	if serverMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "Server", "name", serverMeta.Spec.ServerName)
 		if serverMeta.Spec.Imported {
 			logger.Info("Importing server")
-			debugLogger.Info("Imported yaml mode. Finding Server by name")
+			debugLogger.Info("Imported yaml mode. Finding Server by name", "type", "Server", "name", serverMeta.Spec.ServerName)
 			if server, ok := r.NStorage.HWsStorage.FindServerByName(serverMeta.Spec.ServerName); ok {
-				debugLogger.Info("Imported yaml mode. Server found")
+				debugLogger.Info("Imported yaml mode. Server found", "type", "Server", "name", serverMeta.Spec.ServerName)
 				serverMeta.Spec.ID = server.ID
 				serverMeta.Spec.MainIP = server.MainIP.Address
 				serverMeta.Spec.MgmtIP = server.MgmtIP.Address
@@ -120,12 +120,12 @@ func (r *ServerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 					logger.Error(fmt.Errorf("{patch servermeta.Spec.ID} %s", err), "")
 					return u.patchServerStatus(serverCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "Server", "name", serverMeta.Spec.ServerName)
 				logger.Info("Server imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("Server not found for import")
-			debugLogger.Info("Imported yaml mode. Server not found")
+			debugLogger.Info("Imported yaml mode. Server not found", "type", "Server", "name", serverMeta.Spec.ServerName)
 		}
 
 		logger.Info("Creating Server")
@@ -136,7 +136,7 @@ func (r *ServerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 		logger.Info("Server Created")
 	} else {
 		if apiServer, ok := r.NStorage.HWsStorage.FindServerByID(serverMeta.Spec.ID); ok {
-			debugLogger.Info("Comparing ServerMeta with Netris Server")
+			debugLogger.Info("Comparing ServerMeta with Netris Server", "type", "Server", "name", serverMeta.Spec.ServerName)
 
 			needsPatch := false
 			if serverMeta.Spec.MainIP == "" && apiServer.MainIP.Address != "" {
@@ -326,8 +326,8 @@ func (r *ServerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 		} else {
-			debugLogger.Info("Server not found in Netris")
-			debugLogger.Info("Going to create Server")
+			debugLogger.Info("Server not found in Netris", "type", "Server", "name", serverMeta.Spec.ServerName)
+			debugLogger.Info("Going to create Server", "type", "Server", "name", serverMeta.Spec.ServerName)
 			logger.Info("Creating Server")
 			if _, err, errMsg := r.createServer(serverMeta); err != nil {
 				logger.Error(fmt.Errorf("{createServer} %s", err), "")

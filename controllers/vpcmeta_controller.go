@@ -96,12 +96,12 @@ func (r *VPCMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if vpcMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "VPC", "name", vpcMeta.Spec.VPCName)
 		if vpcMeta.Spec.Imported {
 			logger.Info("Importing vpc")
-			debugLogger.Info("Imported yaml mode. Finding VPC by name")
+			debugLogger.Info("Imported yaml mode. Finding VPC by name", "type", "VPC", "name", vpcMeta.Spec.VPCName)
 			if vpc, ok := r.NStorage.VPCStorage.FindByName(vpcMeta.Spec.VPCName); ok {
-				debugLogger.Info("Imported yaml mode. VPC found")
+				debugLogger.Info("Imported yaml mode. VPC found", "type", "VPC", "name", vpcMeta.Spec.VPCName)
 				vpcMeta.Spec.ID = vpc.ID
 				vpcMeta.Spec.AdminTenantID = vpc.AdminTenant.ID
 				vpcMeta.Spec.AdminTenant = vpc.AdminTenant.Name
@@ -125,12 +125,12 @@ func (r *VPCMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 					logger.Error(fmt.Errorf("{patch vpcmeta.Spec.ID} %s", err), "")
 					return u.patchVPCStatus(vpcCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "VPC", "name", vpcMeta.Spec.VPCName)
 				logger.Info("VPC imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("VPC not found for import")
-			debugLogger.Info("Imported yaml mode. VPC not found")
+			debugLogger.Info("Imported yaml mode. VPC not found", "type", "VPC", "name", vpcMeta.Spec.VPCName)
 		}
 
 		logger.Info("Creating VPC")
@@ -142,8 +142,8 @@ func (r *VPCMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	} else {
 		apiVPC, _ := r.Cred.VPC().GetByID(vpcMeta.Spec.ID)
 		if apiVPC == nil {
-			debugLogger.Info("VPC not found in Netris")
-			debugLogger.Info("Going to create VPC")
+			debugLogger.Info("VPC not found in Netris", "type", "VPC", "name", vpcMeta.Spec.VPCName)
+			debugLogger.Info("Going to create VPC", "type", "VPC", "name", vpcMeta.Spec.VPCName)
 			logger.Info("Creating VPC")
 			if _, err, errMsg := r.createVPC(vpcMeta); err != nil {
 				logger.Error(fmt.Errorf("{createVPC} %s", err), "")
@@ -152,7 +152,7 @@ func (r *VPCMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			logger.Info("VPC Created")
 		} else {
 			vpcCR.Status.ModifiedDate = metav1.NewTime(time.Unix(int64(apiVPC.ModifiedDate/1000), 0))
-			debugLogger.Info("Comparing VPCMeta with Netris VPC")
+			debugLogger.Info("Comparing VPCMeta with Netris VPC", "type", "VPC", "name", vpcMeta.Spec.VPCName)
 			if ok := compareVPCMetaAPIVPC(vpcMeta, apiVPC); ok {
 				debugLogger.Info("Nothing Changed")
 			} else {

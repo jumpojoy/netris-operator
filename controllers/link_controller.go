@@ -121,7 +121,7 @@ func (r *LinkReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "Link", "name", link.GetName())
 		if linkCompareFieldsForNewMeta(link, linkMeta) {
 			debugLogger.Info("Generating New Meta")
 			linkID := linkMeta.Spec.ID
@@ -143,7 +143,7 @@ func (r *LinkReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "Link", "name", link.GetName())
 		if link.GetFinalizers() == nil {
 			link.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 

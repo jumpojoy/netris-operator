@@ -96,10 +96,10 @@ func (r *ServerClusterTemplateMetaReconciler) Reconcile(req ctrl.Request) (ctrl.
 	}
 
 	if sctMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "ServerClusterTemplate", "name", sctMeta.Spec.ServerClusterTemplateName)
 		if sctMeta.Spec.Imported {
 			logger.Info("Importing serverclustertemplate")
-			debugLogger.Info("Imported yaml mode. Finding ServerClusterTemplate by name")
+			debugLogger.Info("Imported yaml mode. Finding ServerClusterTemplate by name", "type", "ServerClusterTemplate", "name", sctMeta.Spec.ServerClusterTemplateName)
 			// Note: ServerClusterTemplate doesn't have a storage, so we need to fetch from API
 			templates, err := r.Cred.ServerClusterTemplate().Get()
 			if err != nil {
@@ -108,7 +108,7 @@ func (r *ServerClusterTemplateMetaReconciler) Reconcile(req ctrl.Request) (ctrl.
 			}
 			for _, template := range templates {
 				if template.Name == sctMeta.Spec.ServerClusterTemplateName {
-					debugLogger.Info("Imported yaml mode. ServerClusterTemplate found")
+					debugLogger.Info("Imported yaml mode. ServerClusterTemplate found", "type", "ServerClusterTemplate", "name", sctMeta.Spec.ServerClusterTemplateName)
 					sctMeta.Spec.ID = template.ID
 					sctMeta.Spec.Name = template.Name
 					sctMeta.Spec.Vnets = template.Vnets
@@ -120,13 +120,13 @@ func (r *ServerClusterTemplateMetaReconciler) Reconcile(req ctrl.Request) (ctrl.
 						logger.Error(fmt.Errorf("{patch sctmeta.Spec.ID} %s", err), "")
 						return u.patchServerClusterTemplateStatus(sctCR, "Failure", err.Error())
 					}
-					debugLogger.Info("Imported yaml mode. ID patched")
-					logger.Info("ServerClusterTemplate imported")
-					return ctrl.Result{RequeueAfter: requeueInterval}, nil
-				}
+					debugLogger.Info("Imported yaml mode. ID patched", "type", "ServerClusterTemplate", "name", sctMeta.Spec.ServerClusterTemplateName)
+				logger.Info("ServerClusterTemplate imported")
+				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
-			logger.Info("ServerClusterTemplate not found for import")
-			debugLogger.Info("Imported yaml mode. ServerClusterTemplate not found")
+		}
+		logger.Info("ServerClusterTemplate not found for import")
+		debugLogger.Info("Imported yaml mode. ServerClusterTemplate not found", "type", "ServerClusterTemplate", "name", sctMeta.Spec.ServerClusterTemplateName)
 		}
 
 		logger.Info("Creating ServerClusterTemplate")
@@ -138,8 +138,8 @@ func (r *ServerClusterTemplateMetaReconciler) Reconcile(req ctrl.Request) (ctrl.
 	} else {
 		apiSCT, err := r.Cred.ServerClusterTemplate().GetByID(sctMeta.Spec.ID)
 		if err != nil || apiSCT == nil {
-			debugLogger.Info("ServerClusterTemplate not found in Netris")
-			debugLogger.Info("Going to create ServerClusterTemplate")
+			debugLogger.Info("ServerClusterTemplate not found in Netris", "type", "ServerClusterTemplate", "name", sctMeta.Spec.ServerClusterTemplateName)
+			debugLogger.Info("Going to create ServerClusterTemplate", "type", "ServerClusterTemplate", "name", sctMeta.Spec.ServerClusterTemplateName)
 			logger.Info("Creating ServerClusterTemplate")
 			if _, err, errMsg := r.createServerClusterTemplate(sctMeta); err != nil {
 				logger.Error(fmt.Errorf("{createServerClusterTemplate} %s", err), "")
@@ -150,6 +150,8 @@ func (r *ServerClusterTemplateMetaReconciler) Reconcile(req ctrl.Request) (ctrl.
 			provisionState = "Active"
 			sctCR.Status.ModifiedDate = metav1.NewTime(time.Unix(int64(apiSCT.ModifiedDate/1000), 0))
 			debugLogger.Info("Comparing ServerClusterTemplateMeta with Netris ServerClusterTemplate",
+				"type", "ServerClusterTemplate",
+				"name", sctMeta.Spec.ServerClusterTemplateName,
 				"metaName", sctMeta.Spec.ServerClusterTemplateName,
 				"apiName", apiSCT.Name)
 			if ok := compareServerClusterTemplateMetaAPIServerClusterTemplate(sctMeta, apiSCT, debugLogger); ok {

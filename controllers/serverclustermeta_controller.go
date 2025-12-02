@@ -121,9 +121,9 @@ func (r *ServerClusterMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, 
 	}
 
 	if scMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "ServerCluster", "name", scMeta.Spec.ServerClusterName)
 		// First, try to find existing ServerCluster by name (for both import and non-import cases)
-		debugLogger.Info("Checking if ServerCluster exists in Netris by name")
+		debugLogger.Info("Checking if ServerCluster exists in Netris by name", "type", "ServerCluster", "name", scMeta.Spec.ServerClusterName)
 		clusters, err := r.Cred.ServerCluster().Get()
 		if err != nil {
 			logger.Error(fmt.Errorf("{Get ServerClusters} %s", err), "")
@@ -131,7 +131,7 @@ func (r *ServerClusterMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, 
 		}
 		for _, cluster := range clusters {
 			if cluster.Name == scMeta.Spec.ServerClusterName {
-				debugLogger.Info("ServerCluster found in Netris by name, importing")
+				debugLogger.Info("ServerCluster found in Netris by name, importing", "type", "ServerCluster", "name", scMeta.Spec.ServerClusterName)
 				scMeta.Spec.ID = cluster.ID
 				scMeta.Spec.AdminID = cluster.Admin.ID
 				scMeta.Spec.Admin = cluster.Admin.Name
@@ -159,7 +159,7 @@ func (r *ServerClusterMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, 
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 		}
-		debugLogger.Info("ServerCluster not found in Netris, will create new one")
+		debugLogger.Info("ServerCluster not found in Netris, will create new one", "type", "ServerCluster", "name", scMeta.Spec.ServerClusterName)
 
 		logger.Info("Creating ServerCluster")
 		if _, err, errMsg := r.createServerCluster(scMeta); err != nil {
@@ -170,8 +170,8 @@ func (r *ServerClusterMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, 
 	} else {
 		apiSC, err := r.Cred.ServerCluster().GetByID(scMeta.Spec.ID)
 		if err != nil || apiSC == nil {
-			debugLogger.Info("ServerCluster not found in Netris")
-			debugLogger.Info("Going to create ServerCluster")
+			debugLogger.Info("ServerCluster not found in Netris", "type", "ServerCluster", "name", scMeta.Spec.ServerClusterName)
+			debugLogger.Info("Going to create ServerCluster", "type", "ServerCluster", "name", scMeta.Spec.ServerClusterName)
 			logger.Info("Creating ServerCluster")
 			if _, err, errMsg := r.createServerCluster(scMeta); err != nil {
 				logger.Error(fmt.Errorf("{createServerCluster} %s", err), "")
@@ -181,7 +181,7 @@ func (r *ServerClusterMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, 
 		} else {
 			provisionState = "Active"
 			scCR.Status.ModifiedDate = metav1.NewTime(time.Unix(int64(apiSC.ModifiedDate/1000), 0))
-			debugLogger.Info("Comparing ServerClusterMeta with Netris ServerCluster")
+			debugLogger.Info("Comparing ServerClusterMeta with Netris ServerCluster", "type", "ServerCluster", "name", scMeta.Spec.ServerClusterName)
 			if ok := compareServerClusterMetaAPIServerCluster(scMeta, apiSC); ok {
 				debugLogger.Info("Nothing Changed")
 			} else {

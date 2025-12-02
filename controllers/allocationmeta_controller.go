@@ -99,12 +99,12 @@ func (r *AllocationMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 	}
 
 	if allocationMeta.Spec.ID == 0 {
-		debugLogger.Info("ID Not found in meta")
+		debugLogger.Info("ID Not found in meta", "type", "Allocation", "name", allocationMeta.Spec.AllocationName)
 		if allocationMeta.Spec.Imported {
 			logger.Info("Importing allocation")
-			debugLogger.Info("Imported yaml mode. Finding Allocation by name")
+			debugLogger.Info("Imported yaml mode. Finding Allocation by name", "type", "Allocation", "name", allocationMeta.Spec.AllocationName)
 			if allocation, ok := r.NStorage.SubnetsStorage.FindByName(allocationMeta.Spec.AllocationName); ok {
-				debugLogger.Info("Imported yaml mode. Allocation found")
+				debugLogger.Info("Imported yaml mode. Allocation found", "type", "Allocation", "name", allocationMeta.Spec.AllocationName)
 				allocationMeta.Spec.ID = allocation.ID
 
 				allocationMetaPatchCtx, allocationMetaPatchCancel := context.WithTimeout(cntxt, contextTimeout)
@@ -114,12 +114,12 @@ func (r *AllocationMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 					logger.Error(fmt.Errorf("{patch allocationmeta.Spec.ID} %s", err), "")
 					return u.patchAllocationStatus(allocationCR, "Failure", err.Error())
 				}
-				debugLogger.Info("Imported yaml mode. ID patched")
+				debugLogger.Info("Imported yaml mode. ID patched", "type", "Allocation", "name", allocationMeta.Spec.AllocationName)
 				logger.Info("Allocation imported")
 				return ctrl.Result{RequeueAfter: requeueInterval}, nil
 			}
 			logger.Info("Allocation not found for import")
-			debugLogger.Info("Imported yaml mode. Allocation not found")
+			debugLogger.Info("Imported yaml mode. Allocation not found", "type", "Allocation", "name", allocationMeta.Spec.AllocationName)
 		}
 
 		logger.Info("Creating Allocation")
@@ -131,7 +131,7 @@ func (r *AllocationMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 	} else {
 		if apiAllocation, ok := r.NStorage.SubnetsStorage.FindByID(allocationMeta.Spec.ID, "allocation"); ok {
 
-			debugLogger.Info("Comparing AllocationMeta with Netris Allocation")
+			debugLogger.Info("Comparing AllocationMeta with Netris Allocation", "type", "Allocation", "name", allocationMeta.Spec.AllocationName)
 			if ok := compareAllocationMetaAPIEAllocation(allocationMeta, apiAllocation, u); ok {
 				debugLogger.Info("Nothing Changed")
 			} else {
@@ -154,8 +154,8 @@ func (r *AllocationMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, err
 				logger.Info("Allocation Updated")
 			}
 		} else {
-			debugLogger.Info("Allocation not found in Netris")
-			debugLogger.Info("Going to create Allocation")
+			debugLogger.Info("Allocation not found in Netris", "type", "Allocation", "name", allocationMeta.Spec.AllocationName)
+			debugLogger.Info("Going to create Allocation", "type", "Allocation", "name", allocationMeta.Spec.AllocationName)
 			logger.Info("Creating Allocation")
 			if _, err, errMsg := r.createAllocation(allocationMeta); err != nil {
 				logger.Error(fmt.Errorf("{createAllocation} %s", err), "")

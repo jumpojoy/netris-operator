@@ -120,7 +120,7 @@ func (r *ControllerReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "Controller", "name", controller.GetName())
 		if controllerCompareFieldsForNewMeta(controller, controllerMeta) {
 			debugLogger.Info("Generating New Meta")
 			controllerID := controllerMeta.Spec.ID
@@ -142,7 +142,7 @@ func (r *ControllerReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "Controller", "name", controller.GetName())
 		if controller.GetFinalizers() == nil {
 			controller.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 

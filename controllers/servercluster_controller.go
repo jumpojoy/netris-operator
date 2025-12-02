@@ -112,7 +112,7 @@ func (r *ServerClusterReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "ServerCluster", "name", scCR.GetName())
 		if serverClusterCompareFieldsForNewMeta(scCR, scMeta) {
 			debugLogger.Info("Generating New Meta")
 			scID := scMeta.Spec.ID
@@ -134,7 +134,7 @@ func (r *ServerClusterReconciler) Reconcile(req ctrl.Request) (ctrl.Result, erro
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "ServerCluster", "name", scCR.GetName())
 		if scCR.GetFinalizers() == nil {
 			scCR.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 			scPatchCtx, scPatchCancel := context.WithTimeout(cntxt, contextTimeout)

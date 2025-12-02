@@ -120,7 +120,7 @@ func (r *NatReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "Nat", "name", nat.GetName())
 		if natCompareFieldsForNewMeta(nat, natMeta) {
 			debugLogger.Info("Generating New Meta")
 			natID := natMeta.Spec.ID
@@ -142,7 +142,7 @@ func (r *NatReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "Nat", "name", nat.GetName())
 		if nat.GetFinalizers() == nil {
 			nat.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 

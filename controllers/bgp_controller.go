@@ -116,7 +116,7 @@ func (r *BGPReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 	}
 
 	if metaFound {
-		debugLogger.Info("Meta found")
+		debugLogger.Info("Meta found", "type", "BGP", "name", bgp.GetName())
 		if bgpCompareFieldsForNewMeta(bgp, bgpMeta) {
 			debugLogger.Info("Generating New Meta")
 			bgpID := bgpMeta.Spec.ID
@@ -138,7 +138,7 @@ func (r *BGPReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 			}
 		}
 	} else {
-		debugLogger.Info("Meta not found")
+		debugLogger.Info("Meta not found", "type", "BGP", "name", bgp.GetName())
 		if bgp.GetFinalizers() == nil {
 			bgp.SetFinalizers([]string{"resource.k8s.netris.ai/delete"})
 
