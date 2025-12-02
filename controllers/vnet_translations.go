@@ -456,6 +456,33 @@ func compareVNetMetaAPIVnetSites(vnetMetaSites []k8sv1alpha1.VNetMetaSite, apiVn
 	return true
 }
 
+func compareVNetMetaAPIVnetPortTags(vnetMetaPortTags []k8sv1alpha1.VNetPortTag, apiVnetPortTags []vnet.VNetPortTag) bool {
+	type portTag struct {
+		Name       string `diff:"name"`
+		AccessMode bool   `diff:"accessMode"`
+	}
+
+	vnetPortTags := []portTag{}
+	apiPortTags := []portTag{}
+
+	for _, tag := range vnetMetaPortTags {
+		vnetPortTags = append(vnetPortTags, portTag{
+			Name:       tag.Name,
+			AccessMode: tag.AccessMode,
+		})
+	}
+
+	for _, tag := range apiVnetPortTags {
+		apiPortTags = append(apiPortTags, portTag{
+			Name:       tag.Name,
+			AccessMode: tag.AccessMode,
+		})
+	}
+
+	changelog, _ := diff.Diff(vnetPortTags, apiPortTags)
+	return len(changelog) <= 0
+}
+
 func compareVNetMetaAPIVnet(vnetMeta *k8sv1alpha1.VNetMeta, apiVnet *vnet.VNetDetailed) bool {
 	if ok := compareVNetMetaAPIVnetSites(vnetMeta.Spec.Sites, apiVnet.Sites); !ok {
 		return false
@@ -492,6 +519,10 @@ func compareVNetMetaAPIVnet(vnetMeta *k8sv1alpha1.VNetMeta, apiVnet *vnet.VNetDe
 	}
 
 	if vnetMeta.Spec.State != apiVnet.State {
+		return false
+	}
+
+	if ok := compareVNetMetaAPIVnetPortTags(vnetMeta.Spec.PortTags, apiVnet.PortTags); !ok {
 		return false
 	}
 
