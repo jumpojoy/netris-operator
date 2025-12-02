@@ -17,6 +17,9 @@ limitations under the License.
 package netrisstorage
 
 import (
+	"fmt"
+	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/netrisai/netriswebapi/v2/types/ipam"
@@ -25,12 +28,18 @@ import (
 // SubnetsStorage .
 type SubnetsStorage struct {
 	sync.Mutex
-	Subnets []*ipam.IPAM
+	Subnets   []*ipam.IPAM
+	VPCStorage *VPCStorage
 }
 
 // NewSubnetsStorage .
 func NewSubnetsStorage() *SubnetsStorage {
 	return &SubnetsStorage{}
+}
+
+// SetVPCStorage sets the VPC storage reference.
+func (p *SubnetsStorage) SetVPCStorage(vpcStorage *VPCStorage) {
+	p.VPCStorage = vpcStorage
 }
 
 // GetAll .
@@ -88,7 +97,13 @@ func (p *SubnetsStorage) FindByID(id int, typo string) (*ipam.IPAM, bool) {
 	item, ok := p.findByID(id, typo)
 	if !ok {
 		_ = p.download()
-		return p.findByID(id, typo)
+		item, ok = p.findByID(id, typo)
+		if !ok {
+			// Print all items names in the storage
+			allNames := p.getAllNames()
+			fmt.Printf("SubnetsStorage: Item with ID=%d, Type=%s not found. Available items: %v\n", id, typo, allNames)
+		}
+		return item, ok
 	}
 	return item, ok
 }
@@ -118,9 +133,48 @@ func (p *SubnetsStorage) findByID(id int, typo string) (*ipam.IPAM, bool) {
 	return nil, false
 }
 
+func (p *SubnetsStorage) getAllNames() []string {
+	names := []string{}
+	for _, item := range p.Subnets {
+		names = append(names, p.collectNames(item)...)
+	}
+	return names
+}
+
+func (p *SubnetsStorage) collectNames(ipam *ipam.IPAM) []string {
+	names := []string{ipam.Name}
+	for _, child := range ipam.Children {
+		names = append(names, p.collectNames(child)...)
+	}
+	return names
+}
+
+
 // Download .
 func (p *SubnetsStorage) download() error {
-	items, err := Cred.IPAM().Get()
+	// Get all VPC IDs from VPCStorage and format as comma-separated string
+	filterByVpc := ""
+	if p.VPCStorage != nil {
+		existingVPCs := p.VPCStorage.GetAll()
+		if len(existingVPCs) > 0 {
+			vpcIDs := make([]string, 0, len(existingVPCs))
+			for _, v := range existingVPCs {
+				vpcIDs = append(vpcIDs, strconv.Itoa(v.ID))
+			}
+			filterByVpc = strings.Join(vpcIDs, ",")
+		}
+	}
+	
+	// Call Get() with filterByVpc parameter if available
+	// filterByVpc is comma-separated string of VPC IDs like "1,2,3"
+	var items []*ipam.IPAM
+	var err error
+	if filterByVpc != "" {
+		items, err = Cred.IPAM().Get(filterByVpc)
+	} else {
+		items, err = Cred.IPAM().Get()
+	}
+	
 	if err != nil {
 		return err
 	}

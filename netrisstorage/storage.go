@@ -51,15 +51,19 @@ type Storage struct {
 // NewStorage .
 func NewStorage(cred *api.Clientset) *Storage {
 	Cred = cred
+	vpcStorage := NewVPCStorage()
+	subnetsStorage := NewSubnetsStorage()
+	subnetsStorage.SetVPCStorage(vpcStorage)
+	
 	return &Storage{
 		PortsStorage:            NewPortStorage(),
 		SitesStorage:            NewSitesStorage(),
 		TenantsStorage:          NewTenantsStorage(),
 		VNetStorage:             NewVNetStorage(),
-		VPCStorage:              NewVPCStorage(),
+		VPCStorage:              vpcStorage,
 		BGPStorage:              NewBGPStorage(),
 		L4LBStorage:             NewL4LBStorage(),
-		SubnetsStorage:          NewSubnetsStorage(),
+		SubnetsStorage:          subnetsStorage,
 		HWsStorage:              NewHWsStorage(),
 		LinksStorage:            NewLinksStorage(),
 		NATStorage:              NewNATStorage(),
