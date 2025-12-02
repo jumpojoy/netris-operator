@@ -127,6 +127,7 @@ func (r *VNetReconciler) VnetToVnetMeta(vnet *k8sv1alpha1.VNet) (*k8sv1alpha1.VN
 			VlanID:       vnet.Spec.VlanID,
 			VPC:          vnet.Spec.VPC,
 			VPCID:        vpcID,
+			PortTags:     vnet.Spec.PortTags,
 		},
 	}
 
@@ -205,6 +206,15 @@ func (r *VNetMetaReconciler) VnetMetaToNetris(vnetMeta *k8sv1alpha1.VNetMeta) (*
 	}
 
 	vpc := vnet.IDName{ID: vnetMeta.Spec.VPCID, Name: vnetMeta.Spec.VPC}
+	portTags := []vnet.VNetPortTag{}
+	if vnetMeta.Spec.PortTags != nil {
+		for _, tag := range vnetMeta.Spec.PortTags {
+			portTags = append(portTags, vnet.VNetPortTag{
+				Name:       tag.Name,
+				AccessMode: tag.AccessMode,
+			})
+		}
+	}
 	vnetAdd := &vnet.VNetAdd{
 		Name:         vnetMeta.Spec.VnetName,
 		Sites:        sites,
@@ -217,6 +227,7 @@ func (r *VNetMetaReconciler) VnetMetaToNetris(vnetMeta *k8sv1alpha1.VNetMeta) (*
 		Vlan:         vlanidInterface,
 		Tags:         []string{},
 		Vpc:          &vpc,
+		PortTags:     portTags,
 	}
 
 	return vnetAdd, nil
@@ -292,6 +303,15 @@ func VnetMetaToNetrisUpdate(vnetMeta *k8sv1alpha1.VNetMeta) (*vnet.VNetUpdate, e
 		vlanidInterface = vlanid
 	}
 
+	portTags := []vnet.VNetPortTag{}
+	if vnetMeta.Spec.PortTags != nil {
+		for _, tag := range vnetMeta.Spec.PortTags {
+			portTags = append(portTags, vnet.VNetPortTag{
+				Name:       tag.Name,
+				AccessMode: tag.AccessMode,
+			})
+		}
+	}
 	vnetUpdate := &vnet.VNetUpdate{
 		Name:         vnetMeta.Spec.VnetName,
 		Sites:        sites,
@@ -302,6 +322,7 @@ func VnetMetaToNetrisUpdate(vnetMeta *k8sv1alpha1.VNetMeta) (*vnet.VNetUpdate, e
 		NativeVlan:   1,
 		Vlan:         vlanidInterface,
 		Tags:         []string{},
+		PortTags:     portTags,
 	}
 
 	return vnetUpdate, nil

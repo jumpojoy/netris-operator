@@ -137,6 +137,19 @@ spec:
                 type: string
               vpcId:
                 type: integer
+              portTags:
+                items:
+                  description: VNetPortTag .
+                  properties:
+                    accessMode:
+                      type: boolean
+                    name:
+                      type: string
+                  required:
+                  - accessMode
+                  - name
+                  type: object
+                type: array
             required:
             - gateways
             - id

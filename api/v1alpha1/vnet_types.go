@@ -73,6 +73,12 @@ type VNetList struct {
 	Items           []VNet `json:"items"`
 }
 
+// VNetPortTag .
+type VNetPortTag struct {
+	Name       string `json:"name"`
+	AccessMode bool   `json:"accessMode"`
+}
+
 // VNetSpec .
 type VNetSpec struct {
 	Owner string `json:"ownerTenant"`
@@ -80,10 +86,11 @@ type VNetSpec struct {
 	// +kubebuilder:validation:Enum=active;disabled
 	State string `json:"state,omitempty"`
 
-	GuestTenants []string   `json:"guestTenants"`
-	Sites        []VNetSite `json:"sites"`
-	VlanID       string     `json:"vlanId,omitempty"`
-	VPC          string     `json:"vpc"`
+	GuestTenants []string      `json:"guestTenants"`
+	Sites        []VNetSite    `json:"sites"`
+	VlanID       string        `json:"vlanId,omitempty"`
+	VPC          string        `json:"vpc"`
+	PortTags     []VNetPortTag `json:"portTags,omitempty"`
 }
 
 // VNetSite .
