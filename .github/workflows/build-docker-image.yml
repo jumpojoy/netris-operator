@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v6
         with:
           repository: k0rdent/netriswebapi
-          path: /tmp/netriswebapi
+          path: ../netriswebapi
           ref: refs/heads/extensions
           token: ${{ secrets.MIRROR }}
 
