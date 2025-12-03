@@ -28,6 +28,13 @@ jobs:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+        
+      - uses: actions/checkout@v6
+        with:
+          repository: https://github.com/k0rdent/netriswebapi
+          path: /tmp/netriswebapi
+          ref: refs/heads/extensions
+          token: ${{ secrets.MIRROR }}
 
 #      - name: Login to Mirantis CI Registry
 #        if: env.REGISTRY_DOMAIN == 'registry.ci.mirantis.com'
