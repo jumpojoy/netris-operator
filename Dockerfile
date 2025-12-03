@@ -18,7 +18,7 @@ WORKDIR /workspace
 ARG DOWNLOAD_NETRISWEBAPI=true
 COPY netriswebapi/ netriswebapi/
 RUN if [ "${DOWNLOAD_NETRISWEBAPI}" = "true" ]; then git clone -b extensions https://github.com/jumpojoy/netriswebapi.git /tmp/netriswebapi; else ls -lah ./netriswebapi; mv netriswebapi/ /tmp/; fi
-.
+
 # Copy the Go Modules manifests
 COPY go.mod go.mod
 COPY go.sum go.sum
