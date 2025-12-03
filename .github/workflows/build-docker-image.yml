@@ -34,7 +34,7 @@ jobs:
           repository: k0rdent/netriswebapi
           path: netriswebapi
           ref: refs/heads/extensions
-          token: ${{ secrets.MIRROR }}
+          token: ${{ secrets.NETRIS }}
 
 #      - name: Login to Mirantis CI Registry
 #        if: env.REGISTRY_DOMAIN == 'registry.ci.mirantis.com'
