@@ -69,6 +69,7 @@ jobs:
           platforms: linux/amd64
           build-args: |
             SOURCE_TAG=${{ inputs.source_tag }}
+            DOWNLOAD_NETRISWEBAPI=false
           provenance: false
           sbom: false
 
