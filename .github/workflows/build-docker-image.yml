@@ -36,13 +36,13 @@ jobs:
           ref: refs/heads/extensions
           token: ${{ secrets.NETRIS }}
 
-#      - name: Login to Mirantis CI Registry
-#        if: env.REGISTRY_DOMAIN == 'registry.ci.mirantis.com'
-#        uses: docker/login-action@v3
-#        with:
-#          registry: registry.ci.mirantis.com
-#          username: ${{ secrets.REGISTRY_CI_USERNAME }}
-#          password: ${{ secrets.REGISTRY_CI_PASSWORD }}
+      - name: Login to Mirantis CI Registry
+        if: env.REGISTRY_DOMAIN == 'registry.ci.mirantis.com'
+        uses: docker/login-action@v3
+        with:
+          registry: registry.ci.mirantis.com
+          username: ${{ secrets.REGISTRY_CI_USERNAME }}
+          password: ${{ secrets.REGISTRY_CI_PASSWORD }}
 
 #      - name: Login to Mirantis Registry
 #        if: env.REGISTRY_DOMAIN == 'registry.mirantis.com'
