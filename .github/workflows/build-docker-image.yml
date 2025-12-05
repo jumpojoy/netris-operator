@@ -1,13 +1,9 @@
 name: Build Image
 
 on:
-  workflow_dispatch:
-    inputs:
-      source_tag:
-        description: "Source Netris operator image tag"
-        required: true
-        default: "v4.0.0"
-        type: string
+  push:
+    branches:
+      - extensions
 
 permissions:
   contents: read
@@ -35,6 +31,14 @@ jobs:
           path: netriswebapi
           ref: refs/heads/extensions
           token: ${{ secrets.NETRIS }}
+          
+      - name: Get versions
+        id: versions
+        run: |
+          pushd deploy/
+          image_version=$(bash deploy/get_version.sh)
+          echo "IMAGE_VERSION=$image_version" >> "$GITHUB_OUTPUT"
+          echo "Using image version: $image_version"
 
       - name: Login to Mirantis CI Registry
         if: env.REGISTRY_DOMAIN == 'registry.ci.mirantis.com'
@@ -57,7 +61,7 @@ jobs:
           timestamp=$(date +%s)
           repo_name=$(basename ${{ github.repository }})
           echo "repo_name=${repo_name}" >> $GITHUB_ENV
-          echo "tag=${{ inputs.source_tag }}.${timestamp}" >> $GITHUB_ENV
+          echo "tag=${{ steps.versions.outputs.image_version }}.${timestamp}" >> $GITHUB_ENV
 
       - name: Build and push netris-operator image
         uses: docker/build-push-action@v6
@@ -69,7 +73,7 @@ jobs:
             ${{ env.REGISTRY_DOMAIN }}/k0rdent-bm/images/${{ env.repo_name }}:${{ env.tag }}
           platforms: linux/amd64
           build-args: |
-            SOURCE_TAG=${{ inputs.source_tag }}
+            SOURCE_TAG=${{ steps.versions.outputs.image_version }}
             DOWNLOAD_NETRISWEBAPI=false
           provenance: false
           sbom: false
