@@ -1,0 +1,70 @@
+name: Helm build charts
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+on:
+  push:
+    branches:
+      - extensions
+
+jobs:
+  build-publish-chart:
+    permissions:
+      contents: read
+      packages: write
+    runs-on: ubuntu-latest
+    env:
+      REGISTRY_ENDPOINT: registry.ci.mirantis.com
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Checkout push commit
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get versions
+        id: versions
+        run: |
+          cd deploy/
+          git_version=$(make version)
+          echo "CHART_VERSION=$git_version" >> "$GITHUB_OUTPUT"
+          echo "Using charts version: $git_version"
+
+      - name: Helm login to MSR
+        shell: bash
+        env:
+          REGISTRY_ENDPOINT: ${{ env.REGISTRY_ENDPOINT }}
+          REGISTRY_USERNAME: ${{ secrets.REGISTRY_CI_USERNAME }}
+          REGISTRY_PASSWORD: ${{ secrets.REGISTRY_CI_PASSWORD }}
+        run: echo "$REGISTRY_PASSWORD" | helm registry login $REGISTRY_ENDPOINT -u "$REGISTRY_USERNAME" --password-stdin
+
+      - name: Lint charts
+        id: lint
+        run: make -j lint
+
+      - name: Build charts
+        id: build
+        run: make build
+
+      - name: Push charts to Mirantis Secure Registry
+        shell: bash
+        run: make -j push
+
+      - name: Log out of dev MSR
+        if: ${{ always() }}
+        run: helm registry logout $REGISTRY_ENDPOINT
+
+      - name: Write installation instructions to summary
+        shell: bash
+        run: |
+          echo "## Helm Chart Digest" >> $GITHUB_STEP_SUMMARY
+          echo "| Parameter | Value |" >> $GITHUB_STEP_SUMMARY
+          echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+          echo "| Source Repository | ${{ github.repository }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Git Reference | ${{ github.ref }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Git Commit | ${{ github.sha }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Version | ${{ steps.versions.outputs.chart_version }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Controllers Version | ${{ steps.controllers_version.outputs.controllers_version }} |" >> $GITHUB_STEP_SUMMARY
