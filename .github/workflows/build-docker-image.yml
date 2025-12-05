@@ -79,6 +79,6 @@ jobs:
 
       - name: Print Build Summary
         run: |
-          IMAGE="${{ env.REGISTRY_DOMAIN }}/k0rdent-ai/images/${{ env.repo_name }}:${{ env.tag }}"
+          IMAGE="${{ env.REGISTRY_DOMAIN }}/k0rdent-bm/images/${{ env.repo_name }}:${{ env.tag }}"
           echo "### Build Summary" >> $GITHUB_STEP_SUMMARY
           echo "\`${IMAGE}\`" >> $GITHUB_STEP_SUMMARY
