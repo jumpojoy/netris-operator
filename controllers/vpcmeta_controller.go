@@ -140,7 +140,12 @@ func (r *VPCMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) {
 		}
 		logger.Info("VPC Created")
 	} else {
-		apiVPC, _ := r.Cred.VPC().GetByID(vpcMeta.Spec.ID)
+		apiVPC, err := r.Cred.VPC().GetByID(vpcMeta.Spec.ID)
+		if err != nil {
+			logger.Error(fmt.Errorf("{GetByID VPC} failed to get VPC by ID %d: %s", vpcMeta.Spec.ID, err), "")
+			debugLogger.Info("Error getting VPC from Netris", "type", "VPC", "name", vpcMeta.Spec.VPCName, "id", vpcMeta.Spec.ID, "error", err.Error())
+			return ctrl.Result{RequeueAfter: requeueInterval}, nil
+		}
 		if apiVPC == nil {
 			debugLogger.Info("VPC not found in Netris", "type", "VPC", "name", vpcMeta.Spec.VPCName)
 			debugLogger.Info("Going to create VPC", "type", "VPC", "name", vpcMeta.Spec.VPCName)
