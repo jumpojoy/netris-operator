@@ -28,7 +28,7 @@ jobs:
       - name: Get versions
         id: versions
         run: |
-          cd deploy/
+          pushd deploy/
           git_version=$(make version)
           echo "CHART_VERSION=$git_version" >> "$GITHUB_OUTPUT"
           echo "Using charts version: $git_version"
@@ -43,15 +43,21 @@ jobs:
 
       - name: Lint charts
         id: lint
-        run: make -j lint
+        run: |
+            pushd deploy/
+            make -j lint
 
       - name: Build charts
         id: build
-        run: make build
+        run: |
+            pushd deploy/
+            make build
 
       - name: Push charts to Mirantis Secure Registry
         shell: bash
-        run: make -j push
+        run: |
+            pushd deploy/
+            make -j push
 
       - name: Log out of dev MSR
         if: ${{ always() }}
