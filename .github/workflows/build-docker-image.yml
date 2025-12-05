@@ -35,7 +35,6 @@ jobs:
       - name: Get versions
         id: versions
         run: |
-          pushd deploy/
           image_version=$(bash deploy/get_version.sh)
           echo "IMAGE_VERSION=$image_version" >> "$GITHUB_OUTPUT"
           echo "Using image version: $image_version"
