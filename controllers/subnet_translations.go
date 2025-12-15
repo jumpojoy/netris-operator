@@ -123,6 +123,9 @@ func subnetUpdateDefaultAnnotations(subnet *k8sv1alpha1.Subnet) {
 		reclaim = "retain"
 	}
 	annotations := subnet.GetAnnotations()
+	if annotations == nil {
+		annotations = make(map[string]string)
+	}
 	annotations["resource.k8s.netris.ai/import"] = imported
 	annotations["resource.k8s.netris.ai/reclaimPolicy"] = reclaim
 	subnet.SetAnnotations(annotations)

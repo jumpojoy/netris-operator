@@ -103,6 +103,9 @@ func allocationUpdateDefaultAnnotations(allocation *k8sv1alpha1.Allocation) {
 		reclaim = "retain"
 	}
 	annotations := allocation.GetAnnotations()
+	if annotations == nil {
+		annotations = make(map[string]string)
+	}
 	annotations["resource.k8s.netris.ai/import"] = imported
 	annotations["resource.k8s.netris.ai/reclaimPolicy"] = reclaim
 	allocation.SetAnnotations(annotations)
