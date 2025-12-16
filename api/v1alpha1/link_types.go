@@ -31,6 +31,9 @@ type LinkSpec struct {
 	// +kubebuilder:validation:MinItems=2
 	// +kubebuilder:validation:MaxItems=2
 	Ports []LinkSpecPort `json:"ports"`
+
+	// Role is a field that is kept only in Kubernetes and not sent to Netris API
+	Role string `json:"role,omitempty"`
 }
 
 // LinkSpecPort .

@@ -53,6 +53,9 @@ spec:
                 maxItems: 2
                 minItems: 2
                 type: array
+              role:
+                description: Role is a field that is kept only in Kubernetes and not sent to Netris API
+                type: string
             required:
             - ports
             type: object
