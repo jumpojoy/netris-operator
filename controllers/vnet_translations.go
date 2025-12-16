@@ -574,6 +574,9 @@ func vnetUpdateDefaultAnnotations(vnet *k8sv1alpha1.VNet) {
 		reclaim = "retain"
 	}
 	annotations := vnet.GetAnnotations()
+	if annotations == nil {
+		annotations = make(map[string]string)
+	}
 	annotations["resource.k8s.netris.ai/import"] = imported
 	annotations["resource.k8s.netris.ai/reclaimPolicy"] = reclaim
 	vnet.SetAnnotations(annotations)
