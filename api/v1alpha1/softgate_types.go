@@ -36,7 +36,11 @@ type SoftgateSpec struct { // INSERT ADDITIONAL SPEC FIELDS - desired state of c
 	MainIP string `json:"mainIp,omitempty"`
 
 	// +kubebuilder:validation:Pattern=`^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$`
-	MgmtIP string `json:"mgmtIp,omitempty"`
+	MgmtIP  string   `json:"mgmtIp,omitempty"`
+	Tags    []string `json:"tags,omitempty"`
+	// +kubebuilder:validation:Enum=sg-hs;sg-pro
+	SgFlavor string `json:"sgFlavor,omitempty"`
+	SgRole   string `json:"sgRole,omitempty"`
 }
 
 // SoftgateStatus defines the observed state of Softgate

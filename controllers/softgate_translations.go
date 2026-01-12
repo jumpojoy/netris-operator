@@ -84,6 +84,9 @@ func (r *SoftgateReconciler) SoftgateToSoftgateMeta(softgate *k8sv1alpha1.Softga
 			ProfileID:    profileID,
 			MainIP:       softgate.Spec.MainIP,
 			MgmtIP:       softgate.Spec.MgmtIP,
+			Tags:         normalizeTags(softgate.Spec.Tags),
+			SgFlavor:     softgate.Spec.SgFlavor,
+			SgRole:       softgate.Spec.SgRole,
 		},
 	}
 
@@ -140,6 +143,8 @@ func SoftgateMetaToNetris(softgateMeta *k8sv1alpha1.SoftgateMeta) (*inventory.HW
 		mgmtIP = "auto"
 	}
 
+	tags := normalizeTags(softgateMeta.Spec.Tags)
+
 	softgateAdd := &inventory.HWSoftgate{
 		Name:        softgateMeta.Spec.SoftgateName,
 		Description: softgateMeta.Spec.Description,
@@ -149,6 +154,9 @@ func SoftgateMetaToNetris(softgateMeta *k8sv1alpha1.SoftgateMeta) (*inventory.HW
 		MainAddress: mainIP,
 		MgmtAddress: mgmtIP,
 		Links:       []inventory.HWLink{},
+		Tags:        tags,
+		SGFlavor:    softgateMeta.Spec.SgFlavor,
+		SGRole:      softgateMeta.Spec.SgRole,
 	}
 
 	return softgateAdd, nil
@@ -166,6 +174,8 @@ func SoftgateMetaToNetrisUpdate(softgateMeta *k8sv1alpha1.SoftgateMeta) (*invent
 		mgmtIP = "auto"
 	}
 
+	tags := normalizeTags(softgateMeta.Spec.Tags)
+
 	softgateUpdate := &inventory.HWSoftgateUpdate{
 		Name:        softgateMeta.Spec.SoftgateName,
 		Description: softgateMeta.Spec.Description,
@@ -175,6 +185,9 @@ func SoftgateMetaToNetrisUpdate(softgateMeta *k8sv1alpha1.SoftgateMeta) (*invent
 		MainAddress: mainIP,
 		MgmtAddress: mgmtIP,
 		Links:       []inventory.HWLink{},
+		Tags:        tags,
+		SGFlavor:    softgateMeta.Spec.SgFlavor,
+		SGRole:      softgateMeta.Spec.SgRole,
 	}
 
 	return softgateUpdate, nil
@@ -214,6 +227,57 @@ func compareSoftgateMetaAPIESoftgate(softgateMeta *k8sv1alpha1.SoftgateMeta, api
 	if apiSoftgate.MgmtIP.Address != softgateMeta.Spec.MgmtIP {
 		u.DebugLogger.Info("MgmtIP changed", "netrisValue", apiSoftgate.MgmtIP.Address, "k8sValue", softgateMeta.Spec.MgmtIP)
 		return false
+	}
+
+	if apiSoftgate.SGFlavor != softgateMeta.Spec.SgFlavor {
+		u.DebugLogger.Info("SgFlavor changed", "netrisValue", apiSoftgate.SGFlavor, "k8sValue", softgateMeta.Spec.SgFlavor)
+		return false
+	}
+
+	if apiSoftgate.SGRole != softgateMeta.Spec.SgRole {
+		u.DebugLogger.Info("SgRole changed", "netrisValue", apiSoftgate.SGRole, "k8sValue", softgateMeta.Spec.SgRole)
+		return false
+	}
+
+	// Compare Tags - normalize nil to empty slice
+	apiTags := normalizeTags(apiSoftgate.Tags)
+	metaTags := normalizeTags(softgateMeta.Spec.Tags)
+	
+	// Compare lengths first
+	if len(apiTags) != len(metaTags) {
+		u.DebugLogger.Info("Tags length changed", "netrisValue", len(apiTags), "k8sValue", len(metaTags), "apiTags", apiTags, "metaTags", metaTags)
+		return false
+	}
+	
+	// If both are empty, they match
+	if len(apiTags) == 0 && len(metaTags) == 0 {
+		return true
+	}
+	
+	// Compare both directions: all metaTags should be in apiTags AND all apiTags should be in metaTags
+	apiTagMap := make(map[string]bool)
+	for _, tag := range apiTags {
+		apiTagMap[tag] = true
+	}
+	metaTagMap := make(map[string]bool)
+	for _, tag := range metaTags {
+		metaTagMap[tag] = true
+	}
+	
+	// Check if all metaTags are in apiTags
+	for _, tag := range metaTags {
+		if !apiTagMap[tag] {
+			u.DebugLogger.Info("Tags changed - meta tag not in API", "tag", tag, "apiTags", apiTags, "metaTags", metaTags)
+			return false
+		}
+	}
+	
+	// Check if all apiTags are in metaTags
+	for _, tag := range apiTags {
+		if !metaTagMap[tag] {
+			u.DebugLogger.Info("Tags changed - API tag not in meta", "tag", tag, "apiTags", apiTags, "metaTags", metaTags)
+			return false
+		}
 	}
 
 	return true

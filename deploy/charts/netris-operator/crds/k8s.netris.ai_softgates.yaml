@@ -68,8 +68,19 @@ spec:
                 type: string
               profile:
                 type: string
+              sgFlavor:
+                enum:
+                - sg-hs
+                - sg-pro
+                type: string
+              sgRole:
+                type: string
               site:
                 type: string
+              tags:
+                items:
+                  type: string
+                type: array
               tenant:
                 type: string
             type: object

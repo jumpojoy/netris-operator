@@ -37,9 +37,12 @@ type SoftgateMetaSpec struct {
 	TenantID    int    `json:"tenantid,omitempty"`
 	Description string `json:"description,omitempty"`
 	SiteID      int    `json:"siteid,omitempty"`
-	ProfileID   int    `json:"profileid,omitempty"`
-	MainIP      string `json:"mainIp,omitempty"`
-	MgmtIP      string `json:"mgmtIp,omitempty"`
+	ProfileID   int      `json:"profileid,omitempty"`
+	MainIP      string   `json:"mainIp,omitempty"`
+	MgmtIP      string   `json:"mgmtIp,omitempty"`
+	Tags        []string `json:"tags,omitempty"`
+	SgFlavor    string   `json:"sgFlavor,omitempty"`
+	SgRole      string   `json:"sgRole,omitempty"`
 }
 
 // SoftgateMetaStatus defines the observed state of SoftgateMeta
