@@ -242,18 +242,18 @@ func compareSoftgateMetaAPIESoftgate(softgateMeta *k8sv1alpha1.SoftgateMeta, api
 	// Compare Tags - normalize nil to empty slice
 	apiTags := normalizeTags(apiSoftgate.Tags)
 	metaTags := normalizeTags(softgateMeta.Spec.Tags)
-	
+
 	// Compare lengths first
 	if len(apiTags) != len(metaTags) {
 		u.DebugLogger.Info("Tags length changed", "netrisValue", len(apiTags), "k8sValue", len(metaTags), "apiTags", apiTags, "metaTags", metaTags)
 		return false
 	}
-	
+
 	// If both are empty, they match
 	if len(apiTags) == 0 && len(metaTags) == 0 {
 		return true
 	}
-	
+
 	// Compare both directions: all metaTags should be in apiTags AND all apiTags should be in metaTags
 	apiTagMap := make(map[string]bool)
 	for _, tag := range apiTags {
@@ -263,7 +263,7 @@ func compareSoftgateMetaAPIESoftgate(softgateMeta *k8sv1alpha1.SoftgateMeta, api
 	for _, tag := range metaTags {
 		metaTagMap[tag] = true
 	}
-	
+
 	// Check if all metaTags are in apiTags
 	for _, tag := range metaTags {
 		if !apiTagMap[tag] {
@@ -271,7 +271,7 @@ func compareSoftgateMetaAPIESoftgate(softgateMeta *k8sv1alpha1.SoftgateMeta, api
 			return false
 		}
 	}
-	
+
 	// Check if all apiTags are in metaTags
 	for _, tag := range apiTags {
 		if !metaTagMap[tag] {

@@ -59,7 +59,7 @@ func (r *SubnetReconciler) SubnetToSubnetMeta(subnet *k8sv1alpha1.Subnet) (*k8sv
 	if subnet.Spec.VPC == "" {
 		return nil, fmt.Errorf("vpc field is required but not set for subnet '%s'", subnet.Name)
 	}
-	
+
 	vpcID := 0
 	if vpc, ok := r.NStorage.VPCStorage.FindByName(subnet.Spec.VPC); ok {
 		vpcID = vpc.ID

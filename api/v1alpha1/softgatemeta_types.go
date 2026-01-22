@@ -34,9 +34,9 @@ type SoftgateMetaSpec struct {
 	ID                   int    `json:"id"`
 	SoftgateName         string `json:"softgateName"`
 
-	TenantID    int    `json:"tenantid,omitempty"`
-	Description string `json:"description,omitempty"`
-	SiteID      int    `json:"siteid,omitempty"`
+	TenantID    int      `json:"tenantid,omitempty"`
+	Description string   `json:"description,omitempty"`
+	SiteID      int      `json:"siteid,omitempty"`
 	ProfileID   int      `json:"profileid,omitempty"`
 	MainIP      string   `json:"mainIp,omitempty"`
 	MgmtIP      string   `json:"mgmtIp,omitempty"`

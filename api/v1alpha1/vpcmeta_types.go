@@ -25,20 +25,20 @@ import (
 
 // VPCMetaSpec defines the desired state of VPCMeta
 type VPCMetaSpec struct {
-	Imported         bool     `json:"imported"`
-	Reclaim          bool     `json:"reclaimPolicy"`
-	VPCCRGeneration  int64    `json:"vpcGeneration"`
-	ID               int      `json:"id"`
-	Name             string   `json:"name"`
-	VPCName          string   `json:"vpcName"`
-	AdminTenant      string   `json:"adminTenant"`
-	AdminTenantID    int      `json:"adminTenantId"`
-	GuestTenants     []string `json:"guestTenants"`
-	GuestTenantIDs   []int    `json:"guestTenantIds"`
-	Tags             []string `json:"tags"`
-	IsSystem         bool     `json:"isSystem,omitempty"`
-	IsDefault        bool     `json:"isDefault,omitempty"`
-	VNI              int      `json:"vni,omitempty"`
+	Imported        bool     `json:"imported"`
+	Reclaim         bool     `json:"reclaimPolicy"`
+	VPCCRGeneration int64    `json:"vpcGeneration"`
+	ID              int      `json:"id"`
+	Name            string   `json:"name"`
+	VPCName         string   `json:"vpcName"`
+	AdminTenant     string   `json:"adminTenant"`
+	AdminTenantID   int      `json:"adminTenantId"`
+	GuestTenants    []string `json:"guestTenants"`
+	GuestTenantIDs  []int    `json:"guestTenantIds"`
+	Tags            []string `json:"tags"`
+	IsSystem        bool     `json:"isSystem,omitempty"`
+	IsDefault       bool     `json:"isDefault,omitempty"`
+	VNI             int      `json:"vni,omitempty"`
 }
 
 // VPCMetaStatus defines the observed state of VPCMeta
@@ -70,4 +70,3 @@ type VPCMetaList struct {
 func init() {
 	SchemeBuilder.Register(&VPCMeta{}, &VPCMetaList{})
 }
-

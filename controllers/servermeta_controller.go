@@ -262,7 +262,7 @@ func (r *ServerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 					return u.patchServerStatus(serverCR, "Failure", errMsg.Error())
 				}
 				logger.Info("Server Updated")
-				
+
 				// After update, refresh the storage cache and check if ProfileID was actually updated
 				// If API still has ProfileID=0 but we sent ProfileID=1, the API might not support setting it
 				// In that case, we should accept API's value and update serverMeta
@@ -272,7 +272,7 @@ func (r *ServerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 					if updatedServer, ok := r.NStorage.HWsStorage.FindServerByID(serverMeta.Spec.ID); ok {
 						if serverMeta.Spec.ProfileID != 0 && updatedServer.Profile.ID == 0 {
 							// We tried to set ProfileID but API still has 0 - accept API's value
-							debugLogger.Info("ProfileID update not accepted by API, accepting API value (0)", 
+							debugLogger.Info("ProfileID update not accepted by API, accepting API value (0)",
 								"attemptedValue", serverMeta.Spec.ProfileID, "apiValue", updatedServer.Profile.ID)
 							serverMeta.Spec.ProfileID = 0
 							serverMetaPatchCtx, serverMetaPatchCancel := context.WithTimeout(cntxt, contextTimeout)
@@ -283,7 +283,7 @@ func (r *ServerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 								return ctrl.Result{RequeueAfter: requeueInterval}, nil
 							}
 							debugLogger.Info("ProfileID cleared in serverMeta to match API")
-							
+
 							// Also clear Profile in Server CR to prevent it from regenerating serverMeta with ProfileID=1
 							if serverCR.Spec.Profile != "" {
 								debugLogger.Info("Clearing Profile in Server CR to match API")
@@ -302,7 +302,7 @@ func (r *ServerMetaReconciler) Reconcile(req ctrl.Request) (ctrl.Result, error) 
 					}
 				}
 			}
-			
+
 			// Clear ProfileID if needed (after comparison and update)
 			if needsProfileIDClear {
 				serverMetaPatchCtx, serverMetaPatchCancel := context.WithTimeout(cntxt, contextTimeout)
@@ -450,4 +450,3 @@ func (u *uniReconciler) updateServerIfNeccesarry(serverCR *k8sv1alpha1.Server, s
 	}
 	return ctrl.Result{}, nil
 }
-

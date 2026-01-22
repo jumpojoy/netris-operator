@@ -60,6 +60,8 @@ spec:
             description: ServerClusterSpec defines the desired state of ServerCluster
             properties:
               admin:
+                description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                  Important: Run "make" to regenerate code after modifying this file'
                 type: string
               site:
                 type: string
@@ -104,4 +106,3 @@ status:
     plural: ""
   conditions: []
   storedVersions: []
-

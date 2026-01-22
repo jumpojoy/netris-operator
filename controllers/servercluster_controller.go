@@ -224,4 +224,3 @@ func (r *ServerClusterReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&k8sv1alpha1.ServerCluster{}).
 		Complete(r)
 }
-

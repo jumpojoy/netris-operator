@@ -28,7 +28,7 @@ import (
 // SubnetsStorage .
 type SubnetsStorage struct {
 	sync.Mutex
-	Subnets   []*ipam.IPAM
+	Subnets    []*ipam.IPAM
 	VPCStorage *VPCStorage
 }
 
@@ -149,7 +149,6 @@ func (p *SubnetsStorage) collectNames(ipam *ipam.IPAM) []string {
 	return names
 }
 
-
 // Download .
 func (p *SubnetsStorage) download() error {
 	// Get all VPC IDs from VPCStorage and format as comma-separated string
@@ -164,7 +163,7 @@ func (p *SubnetsStorage) download() error {
 			filterByVpc = strings.Join(vpcIDs, ",")
 		}
 	}
-	
+
 	// Call Get() with filterByVpc parameter if available
 	// filterByVpc is comma-separated string of VPC IDs like "1,2,3"
 	var items []*ipam.IPAM
@@ -174,7 +173,7 @@ func (p *SubnetsStorage) download() error {
 	} else {
 		items, err = Cred.IPAM().Get()
 	}
-	
+
 	if err != nil {
 		return err
 	}

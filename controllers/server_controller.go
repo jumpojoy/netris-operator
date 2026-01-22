@@ -231,4 +231,3 @@ func (r *ServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&k8sv1alpha1.Server{}).
 		Complete(r)
 }
-

@@ -272,4 +272,3 @@ func (r *ServerClusterMetaReconciler) updateServerCluster(id int, sc *serverclus
 
 	return ctrl.Result{}, nil, nil
 }
-

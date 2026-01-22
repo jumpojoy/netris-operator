@@ -83,21 +83,21 @@ func (r *ServerReconciler) ServerToServerMeta(server *k8sv1alpha1.Server) (*k8sv
 		},
 		TypeMeta: metav1.TypeMeta{},
 		Spec: k8sv1alpha1.ServerMetaSpec{
-			Imported:     imported,
-			Reclaim:      reclaim,
-			ServerName:   server.Name,
-			Description:  server.Spec.Description,
-			TenantID:     tenantID,
-			SiteID:       siteID,
-			ProfileID:    profileID,
-		MainIP:       server.Spec.MainIP,
-		MgmtIP:       server.Spec.MgmtIP,
-		UUID:         server.Spec.UUID,
-		ASN:          server.Spec.ASN,
-		PortCount:    server.Spec.PortCount,
-		CustomData:   server.Spec.CustomData,
-		Tags:         normalizeTags(server.Spec.Tags),
-		SRVRole:      server.Spec.SRVRole,
+			Imported:    imported,
+			Reclaim:     reclaim,
+			ServerName:  server.Name,
+			Description: server.Spec.Description,
+			TenantID:    tenantID,
+			SiteID:      siteID,
+			ProfileID:   profileID,
+			MainIP:      server.Spec.MainIP,
+			MgmtIP:      server.Spec.MgmtIP,
+			UUID:        server.Spec.UUID,
+			ASN:         server.Spec.ASN,
+			PortCount:   server.Spec.PortCount,
+			CustomData:  server.Spec.CustomData,
+			Tags:        normalizeTags(server.Spec.Tags),
+			SRVRole:     server.Spec.SRVRole,
 		},
 	}
 
@@ -302,18 +302,18 @@ func compareServerMetaAPIServer(serverMeta *k8sv1alpha1.ServerMeta, apiServer *i
 	// Compare Tags - normalize nil to empty slice
 	apiTags := normalizeTags(apiServer.Tags)
 	metaTags := normalizeTags(serverMeta.Spec.Tags)
-	
+
 	// Compare lengths first
 	if len(apiTags) != len(metaTags) {
 		u.DebugLogger.Info("Tags length changed", "netrisValue", len(apiTags), "k8sValue", len(metaTags), "apiTags", apiTags, "metaTags", metaTags)
 		return false
 	}
-	
+
 	// If both are empty, they match
 	if len(apiTags) == 0 && len(metaTags) == 0 {
 		return true
 	}
-	
+
 	// Compare both directions: all metaTags should be in apiTags AND all apiTags should be in metaTags
 	apiTagMap := make(map[string]bool)
 	for _, tag := range apiTags {
@@ -323,7 +323,7 @@ func compareServerMetaAPIServer(serverMeta *k8sv1alpha1.ServerMeta, apiServer *i
 	for _, tag := range metaTags {
 		metaTagMap[tag] = true
 	}
-	
+
 	// Check if all metaTags are in apiTags
 	for _, tag := range metaTags {
 		if !apiTagMap[tag] {
@@ -331,7 +331,7 @@ func compareServerMetaAPIServer(serverMeta *k8sv1alpha1.ServerMeta, apiServer *i
 			return false
 		}
 	}
-	
+
 	// Check if all apiTags are in metaTags
 	for _, tag := range apiTags {
 		if !metaTagMap[tag] {
@@ -342,4 +342,3 @@ func compareServerMetaAPIServer(serverMeta *k8sv1alpha1.ServerMeta, apiServer *i
 
 	return true
 }
-

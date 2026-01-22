@@ -72,6 +72,19 @@ spec:
                 type: array
               ownerTenant:
                 type: string
+              portTags:
+                items:
+                  description: VNetPortTag .
+                  properties:
+                    accessMode:
+                      type: boolean
+                    name:
+                      type: string
+                  required:
+                  - accessMode
+                  - name
+                  type: object
+                type: array
               sites:
                 items:
                   description: VNetSite .
@@ -137,19 +150,6 @@ spec:
                 type: string
               vpc:
                 type: string
-              portTags:
-                items:
-                  description: VNetPortTag .
-                  properties:
-                    accessMode:
-                      type: boolean
-                    name:
-                      type: string
-                  required:
-                  - accessMode
-                  - name
-                  type: object
-                type: array
             required:
             - guestTenants
             - ownerTenant

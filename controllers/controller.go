@@ -352,21 +352,6 @@ func (u *uniReconciler) patchServerStatus(server *k8sv1alpha1.Server, status, me
 	return ctrl.Result{RequeueAfter: requeueInterval}, nil
 }
 
-func (u *uniReconciler) patchServerClusterTemplateStatus(sct *k8sv1alpha1.ServerClusterTemplate, status, message string) (ctrl.Result, error) {
-	u.DebugLogger.Info("Patching Status", "status", status, "message", message)
-
-	sct.Status.Status = status
-	sct.Status.Message = message
-
-	ctx, cancel := context.WithTimeout(cntxt, contextTimeout)
-	defer cancel()
-	err := u.Status().Patch(ctx, sct.DeepCopyObject(), client.Merge, &client.PatchOptions{})
-	if err != nil {
-		u.DebugLogger.Info("{r.Status().Patch}", "error", err, "action", "status update")
-	}
-	return ctrl.Result{RequeueAfter: requeueInterval}, nil
-}
-
 func (u *uniReconciler) patchServerClusterStatus(sc *k8sv1alpha1.ServerCluster, status, message string) (ctrl.Result, error) {
 	u.DebugLogger.Info("Patching Status", "status", status, "message", message)
 

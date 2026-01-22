@@ -61,15 +61,15 @@ func (r *VPCReconciler) VPCToVPCMeta(vpcCR *k8sv1alpha1.VPC) (*k8sv1alpha1.VPCMe
 		},
 		TypeMeta: metav1.TypeMeta{},
 		Spec: k8sv1alpha1.VPCMetaSpec{
-			Imported:        imported,
-			Reclaim:         reclaim,
-			Name:            string(vpcCR.GetUID()),
-			VPCName:         vpcCR.Name,
-			AdminTenant:     vpcCR.Spec.AdminTenant,
-			AdminTenantID:   adminTenantID,
-			GuestTenants:    guestTenantNames,
-			GuestTenantIDs:  guestTenantIDs,
-			Tags:            normalizeVPCTags(vpcCR.Spec.Tags),
+			Imported:       imported,
+			Reclaim:        reclaim,
+			Name:           string(vpcCR.GetUID()),
+			VPCName:        vpcCR.Name,
+			AdminTenant:    vpcCR.Spec.AdminTenant,
+			AdminTenantID:  adminTenantID,
+			GuestTenants:   guestTenantNames,
+			GuestTenantIDs: guestTenantIDs,
+			Tags:           normalizeVPCTags(vpcCR.Spec.Tags),
 		},
 	}
 
@@ -200,4 +200,3 @@ func vpcUpdateDefaultAnnotations(vpcCR *k8sv1alpha1.VPC) {
 	annotations["resource.k8s.netris.ai/reclaimPolicy"] = reclaim
 	vpcCR.SetAnnotations(annotations)
 }
-

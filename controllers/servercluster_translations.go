@@ -201,4 +201,3 @@ func serverClusterUpdateDefaultAnnotations(scCR *k8sv1alpha1.ServerCluster) {
 	annotations["resource.k8s.netris.ai/reclaimPolicy"] = reclaim
 	scCR.SetAnnotations(annotations)
 }
-

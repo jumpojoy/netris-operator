@@ -95,7 +95,7 @@ func (r *VNetReconciler) VnetToVnetMeta(vnet *k8sv1alpha1.VNet) (*k8sv1alpha1.VN
 	if vnet.Spec.VPC == "" {
 		return nil, fmt.Errorf("vpc field is required but not set for vnet '%s'", vnet.Name)
 	}
-	
+
 	vpcID := 0
 	if vpc, ok := r.NStorage.VPCStorage.FindByName(vnet.Spec.VPC); ok {
 		vpcID = vpc.ID

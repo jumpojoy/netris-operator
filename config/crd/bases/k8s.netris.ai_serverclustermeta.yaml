@@ -40,13 +40,18 @@ spec:
                 type: string
               adminId:
                 type: integer
+              id:
+                type: integer
               imported:
+                description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                  Important: Run "make" to regenerate code after modifying this file'
                 type: boolean
               name:
                 type: string
               reclaimPolicy:
                 type: boolean
               serverClusterGeneration:
+                format: int64
                 type: integer
               serverClusterName:
                 type: string
@@ -66,6 +71,22 @@ spec:
                 type: string
               vpcId:
                 type: integer
+            required:
+            - admin
+            - adminId
+            - id
+            - imported
+            - name
+            - reclaimPolicy
+            - serverClusterGeneration
+            - serverClusterName
+            - site
+            - siteId
+            - tags
+            - template
+            - templateId
+            - vpc
+            - vpcId
             type: object
           status:
             description: ServerClusterMetaStatus defines the observed state of ServerClusterMeta
@@ -81,4 +102,3 @@ status:
     plural: ""
   conditions: []
   storedVersions: []
-

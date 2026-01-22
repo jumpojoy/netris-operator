@@ -224,4 +224,3 @@ func (r *VPCReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		For(&k8sv1alpha1.VPC{}).
 		Complete(r)
 }
-

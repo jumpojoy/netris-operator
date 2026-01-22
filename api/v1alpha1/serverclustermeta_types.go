@@ -74,4 +74,3 @@ type ServerClusterMetaList struct {
 func init() {
 	SchemeBuilder.Register(&ServerClusterMeta{}, &ServerClusterMetaList{})
 }
-

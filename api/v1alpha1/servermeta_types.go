@@ -28,11 +28,11 @@ type ServerMetaSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	Imported           bool     `json:"imported"`
-	Reclaim            bool     `json:"reclaimPolicy"`
-	ServerCRGeneration int64    `json:"serverGeneration"`
-	ID                 int      `json:"id"`
-	ServerName         string   `json:"serverName"`
+	Imported           bool   `json:"imported"`
+	Reclaim            bool   `json:"reclaimPolicy"`
+	ServerCRGeneration int64  `json:"serverGeneration"`
+	ID                 int    `json:"id"`
+	ServerName         string `json:"serverName"`
 
 	TenantID    int      `json:"tenantid,omitempty"`
 	Description string   `json:"description,omitempty"`
@@ -77,4 +77,3 @@ type ServerMetaList struct {
 func init() {
 	SchemeBuilder.Register(&ServerMeta{}, &ServerMetaList{})
 }
-

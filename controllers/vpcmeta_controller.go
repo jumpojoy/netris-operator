@@ -248,4 +248,3 @@ func (r *VPCMetaReconciler) updateVPC(id int, vpc *vpc.VPCw) (ctrl.Result, error
 
 	return ctrl.Result{}, nil, nil
 }
-

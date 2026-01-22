@@ -87,4 +87,3 @@ type ServerList struct {
 func init() {
 	SchemeBuilder.Register(&Server{}, &ServerList{})
 }
-

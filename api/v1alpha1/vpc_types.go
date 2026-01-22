@@ -67,4 +67,3 @@ type VPCSpec struct {
 func init() {
 	SchemeBuilder.Register(&VPC{}, &VPCList{})
 }
-

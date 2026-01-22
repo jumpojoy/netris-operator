@@ -42,7 +42,7 @@ func (r *AllocationReconciler) AllocationToAllocationMeta(allocation *k8sv1alpha
 	if allocation.Spec.VPC == "" {
 		return nil, fmt.Errorf("vpc field is required but not set for allocation '%s'", allocation.Name)
 	}
-	
+
 	vpcID := 0
 	if vpc, ok := r.NStorage.VPCStorage.FindByName(allocation.Spec.VPC); ok {
 		vpcID = vpc.ID
@@ -120,7 +120,6 @@ func AllocationMetaToNetris(allocationMeta *k8sv1alpha1.AllocationMeta) (*ipam.A
 		Tenant: ipam.IDName{Name: allocationMeta.Spec.Tenant},
 		Vpc:    &vpc,
 	}
-	
 
 	return allocationAdd, nil
 }

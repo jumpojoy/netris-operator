@@ -54,7 +54,7 @@ func NewStorage(cred *api.Clientset) *Storage {
 	vpcStorage := NewVPCStorage()
 	subnetsStorage := NewSubnetsStorage()
 	subnetsStorage.SetVPCStorage(vpcStorage)
-	
+
 	return &Storage{
 		PortsStorage:            NewPortStorage(),
 		SitesStorage:            NewSitesStorage(),
