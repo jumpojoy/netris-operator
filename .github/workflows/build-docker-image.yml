@@ -44,16 +44,16 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: registry.ci.mirantis.com
-          username: ${{ secrets.REGISTRY_CI_USERNAME }}
-          password: ${{ secrets.REGISTRY_CI_PASSWORD }}
+          username: '${{ secrets.REGISTRY_CI_USERNAME }}'
+          password: '${{ secrets.REGISTRY_CI_PASSWORD }}'
 
-#      - name: Login to Mirantis Registry
-#        if: env.REGISTRY_DOMAIN == 'registry.mirantis.com'
-#        uses: docker/login-action@v3
-#        with:
-#          registry: registry.mirantis.com
-#          username: ${{ secrets.REGISTRY_PROD_USERNAME }}
-#          password: ${{ secrets.REGISTRY_PROD_PASSWORD }}
+      - name: Login to Mirantis Registry
+        if: env.REGISTRY_DOMAIN == 'registry.mirantis.com'
+        uses: docker/login-action@v3
+        with:
+          registry: registry.mirantis.com
+          username: '${{ secrets.REGISTRY_PROD_USERNAME }}'
+          password: '${{ secrets.REGISTRY_PROD_PASSWORD }}'
 
       - name: Set image metadata
         run: |
