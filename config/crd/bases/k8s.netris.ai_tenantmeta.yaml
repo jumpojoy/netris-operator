@@ -1,0 +1,77 @@
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.6.1
+  creationTimestamp: null
+  name: tenantmeta.k8s.netris.ai
+spec:
+  group: k8s.netris.ai
+  names:
+    kind: TenantMeta
+    listKind: TenantMetaList
+    plural: tenantmeta
+    singular: tenantmeta
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: TenantMeta is the Schema for the tenantmeta API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: TenantMetaSpec defines the desired state of TenantMeta
+            properties:
+              description:
+                type: string
+              id:
+                type: integer
+              imported:
+                description: 'INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                  Important: Run "make" to regenerate code after modifying this file'
+                type: boolean
+              name:
+                type: string
+              reclaimPolicy:
+                type: boolean
+              tenantGeneration:
+                format: int64
+                type: integer
+              tenantName:
+                type: string
+            required:
+            - id
+            - imported
+            - name
+            - reclaimPolicy
+            - tenantGeneration
+            - tenantName
+            type: object
+          status:
+            description: TenantMetaStatus defines the observed state of TenantMeta
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+status:
+  acceptedNames:
+    kind: ""
+    plural: ""
+  conditions: []
+  storedVersions: []

@@ -756,6 +756,58 @@ rules:
 - apiGroups:
   - k8s.netris.ai
   resources:
+  - tenantmeta
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - k8s.netris.ai
+  resources:
+  - tenantmeta/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - k8s.netris.ai
+  resources:
+  - tenantmeta/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - k8s.netris.ai
+  resources:
+  - tenants
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - k8s.netris.ai
+  resources:
+  - tenants/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - k8s.netris.ai
+  resources:
+  - tenants/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - k8s.netris.ai
+  resources:
   - vnetmeta
   verbs:
   - create

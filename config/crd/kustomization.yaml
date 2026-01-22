@@ -26,6 +26,8 @@ resources:
 - bases/k8s.netris.ai_natmeta.yaml
 - bases/k8s.netris.ai_inventoryprofiles.yaml
 - bases/k8s.netris.ai_inventoryprofilemeta.yaml
+- bases/k8s.netris.ai_tenants.yaml
+- bases/k8s.netris.ai_tenantmeta.yaml
 # +kubebuilder:scaffold:crdkustomizeresource
 
 patchesStrategicMerge:

@@ -395,6 +395,26 @@ func main() {
 		setupLog.Error(err, "unable to create controller", "controller", "InventoryProfileMeta")
 		os.Exit(1)
 	}
+	if err = (&controllers.TenantReconciler{
+		Client:   mgr.GetClient(),
+		Log:      ctrl.Log.WithName("Tenant"),
+		Scheme:   mgr.GetScheme(),
+		Cred:     cred,
+		NStorage: nStorage,
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "Tenant")
+		os.Exit(1)
+	}
+	if err = (&controllers.TenantMetaReconciler{
+		Client:   mgr.GetClient(),
+		Log:      ctrl.Log.WithName("TenantMeta"),
+		Scheme:   mgr.GetScheme(),
+		Cred:     cred,
+		NStorage: nStorage,
+	}).SetupWithManager(mgr); err != nil {
+		setupLog.Error(err, "unable to create controller", "controller", "TenantMeta")
+		os.Exit(1)
+	}
 
 	// +kubebuilder:scaffold:builder
 
